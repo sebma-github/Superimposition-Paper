@@ -7,21 +7,23 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 #Because of this, while the result of the analyses will be the same, do not be surprised if the histogram bars on the graphs change 
 #slightly from one analysis to the other.
 
-############################################# LOAD DATA ######################################################
+ATH: I need to change the paths so it's cleaner.
 
-#Load GRanges objects of the datasets of interest. (made with thescript: Superimposition-Paper/GRanges_Objects/makeGRanges_outofdatasets.R)
-    #Whole genome assembly (NOT WGseq): Could be used with RegioneR if no resampling.
-    genomecharr <- readRDS("/Users/sebma/Desktop/GRanges_Objects/genome_noNW_nomit_GR.rds")
+############################################# LOAD DATA ######################################################
+#Load GRanges objects of the datasets of interest located in Superimposition-Paper/GRanges_Objects/ 
+#These were made with thescript: Superimposition-Paper/GRanges_Objects/makeGRanges_outofdatasets.R
+#"no_NW" indicates that the dataset does not comprise data from unplaced scaffolds
+#"nomit" or "noMit" indicate that the dataset does not comprise data from the mitochondrial scaffold
 
   #Methylation  (ATH: These do not have a peak around them. Just an Irange of 2bp)
     #significant CpGs by morph (Morph, MorphxTime, MorphxSex)
-    glm27_signifmorph_noNW_nomit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/glm27_signifmorphall_noNW_nomit_GR.rds")
+    glm27_signifmorph_noNW_nomit_GR <- readRDS("~/glm27_signifmorphall_noNW_nomit_GR.rds")
     #non-significant CpGs:
-    glm27_nonsignifmorphall_noNW_nomit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/glm27_nonsignifmorphall_noNW_nomit_GR.rds")
-    #whole dataset but without the mitochondrial scaffold
-    glm27_allPos_noNW_noMit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/glm27_allPos_noNW_noMit_GR.rds")
-    #All signifCpGs by Time (Time, TIme xMorph, TimexSex) for negative control
-    glm27_signiftime_noNW_nomit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/glm27_signiftimeall_noNW_nomit_GR.rds")
+    glm27_nonsignifmorphall_noNW_nomit_GR <- readRDS("~/glm27_nonsignifmorphall_noNW_nomit_GR.rds")
+    #whole RRBS dataset (all CpGs)
+    glm27_allPos_noNW_noMit_GR <- readRDS("~/glm27_allPos_noNW_noMit_GR.rds")
+    #All signifCpGs by Time (Time, Time xMorph, TimexSex) for negative control
+    glm27_signiftime_noNW_nomit_GR <- readRDS("~/glm27_signiftimeall_noNW_nomit_GR.rds")
     
     
   #RADseq data  
@@ -54,7 +56,8 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     #Non signif genes 
     #nonDEgenes_NConly_uniq_20kbpeak_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/nonDEgenes_NConly_uniq_20kbpeak_GR_trim.rds")
     
-
+#Whole genome assembly (NOT WGseq): Could be used with RegioneR if no resampling.
+    genomecharr <- readRDS("/Users/sebma/Desktop/GRanges_Objects/genome_noNW_nomit_GR.rds")
   
 ################### Overlaps between whole datasets, randomize over whole genome ######################### 
     ############### OLD STUFF
@@ -410,9 +413,16 @@ plot(ptnonsignifCpG_signifRAD)
 
 #Need to check the opposite: Signif CpGs vs non signif RAD
 
+######################################################
+################### Overlaps between whole datasets, randomize over whole genome ######################### 
+    ############### OLD STUFF, Leaving here just for example
+    
+    #RRBS vs RAD
+    RRBSvsRAD <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=RADallpos_20kpeak_noNW_nomit_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
+    plot(RRBSvsRAD)
 
-
-
+######################################################
+#Reminder for self (Sebbi), GRanges object on my computer located at "/Users/sebma/Desktop/GRanges_Objects/"
 
 
 
