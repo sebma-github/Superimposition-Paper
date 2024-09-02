@@ -10,6 +10,8 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 ############################################# LOAD DATA ######################################################
 #Load GRanges objects of the datasets of interest located in Superimposition-Paper/GRanges_Objects/ 
 #These were made with thescript: Superimposition-Paper/GRanges_Objects/makeGRanges_outofdatasets.R
+
+#Notes:
 #"no_NW" or "NC_only" indicates that the dataset does not comprise data from unplaced scaffolds
 #"nomit" or "noMit" indicate that the dataset does not comprise data from the mitochondrial scaffold
 #"Trimmed" or "_trim" indicates that the GRanges object were trimmed to remove sequences outside the boundaries of a scaffold.
