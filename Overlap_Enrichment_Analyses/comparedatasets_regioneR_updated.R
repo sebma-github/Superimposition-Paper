@@ -40,7 +40,7 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     #All RADseq positions on NC_ with 20kpeak (Trimmed) 
     RADallpos_20kpeak_noNW_nomit_GR_trim <- readRDS("~/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
     
-  #WGseq data (100kb peaks: setup by Alexander)
+  #WGseq data (100kb peaks, as identified by Alexander)
     #Significant regions outside 2 sigmas (trimmed)
     WGSNPs_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WG_2sigma_NConly_nomit_100k_GR_trim.rds") 
     #Non-significant regions (Trimmed)
@@ -57,13 +57,16 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     #DE genes but without the 146 that are missing from the whole table
     DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR.rds")
     
-    #All dataset (Trimmed)
-    allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim.rds")
+    #All genes (Trimmed)
+    allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim <- readRDS("~/allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim.rds")
     #Non signif genes 
-    #nonDEgenes_NConly_uniq_20kbpeak_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/nonDEgenes_NConly_uniq_20kbpeak_GR_trim.rds")
-    
-#Whole genome assembly (NOT WGseq): Could be used with RegioneR if no resampling.
-    genomecharr <- readRDS("/Users/sebma/Desktop/GRanges_Objects/genome_noNW_nomit_GR.rds")
+    nonDEgenes_NConly_uniq_20kbpeak_GR <- readRDS("~/nonDEgenes_NConly_uniq_20kbpeak_GR_trim.rds")
+
+#BONUS
+#Whole genome assembly (NOT WGseq, the whole assembly). This can be used with RegioneR if you don't want to use the resampleRegions function.
+#You can see an example of this at the end of this script. I do not think it should be used, as the resampleRegions function is,
+#to me, the most accurate. But anyway, if you want to use the assembly as a base for other functions, here it is as a GRanges object.
+   # genomecharr <- readRDS("~/genome_noNW_nomit_GR.rds")
   
 ################# OVERLAP ANALYSES USING THE RESAMPLEREGIONS FUNCTION ########################################
 
