@@ -19,6 +19,10 @@ ATH: I need to change the paths so it's cleaner.
     #downstream to 10kb upstream of this base, the GRanges object will actually exceed the end of the scaffold by 9500bp.
     #Because I did not know whether this could confuse the permutation software or not, I decided to trim all sequences outside the scaffolds.
     #Thus, GRanges objects do not all have exactly the same size. (Some are more equal than others #AnimalFarm).
+#Because we will be using the resample_region command, we don't actually need the GRanges objects coresponding to the non-significant parts of the data:
+    #Indeed, you will compare positions of the significant parts of the data with resampling done on the ENTIRETY of the data (comprising significant 
+    #and non-significant regions). Still, I have included to this script and to Superimposition-Paper/GRanges_Objects/ GRanges objects corresponding
+    #to the non-significant parts of the data. Feel free to use them as negative controls or if you want to test other things.
 
   #Methylation  (These do not have a peak around them. Just an Irange of 2bp)
     #significant CpGs by morph (Morph, MorphxTime, MorphxSex)
