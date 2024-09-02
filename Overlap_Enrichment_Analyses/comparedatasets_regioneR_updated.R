@@ -2,12 +2,10 @@ library(dplyr)
 library(sqldf)
 library(regioneR)  #browseVignettes("regioneR") #For infos
 
-#Note: Setting seed for reproducible results did not seem to work with RegioneR resampling of regions? 
+#Note: Setting seed for reproducible results does not seem to work with RegioneR resampling of regions? 
 #Anyways, it is not a big deal when using as big as 1000 permutations (even 50 permutations already gives consistent results).
 #Because of this, while the result of the analyses will be the same, do not be surprised if the histogram bars on the graphs change 
-#slightly from one analysis to the other.
-
-ATH: I need to change the paths so it's cleaner.
+#slightly from one run of the script to the other.
 
 ############################################# LOAD DATA ######################################################
 #Load GRanges objects of the datasets of interest located in Superimposition-Paper/GRanges_Objects/ 
