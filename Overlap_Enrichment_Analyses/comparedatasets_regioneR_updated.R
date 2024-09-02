@@ -19,7 +19,7 @@ ATH: I need to change the paths so it's cleaner.
     #downstream to 10kb upstream of this base, the GRanges object will actually exceed the end of the scaffold by 9500bp.
     #Because I did not know whether this could confuse the permutation software or not, I decided to trim all sequences outside the scaffolds.
     #Thus, GRanges objects do not all have exactly the same size. (Some are more equal than others #AnimalFarm).
-#Because we will be using the resample_region command, we don't actually need the GRanges objects coresponding to the non-significant parts of the data:
+#Because we will be using the resampleRegions randomizing function, we do not actually need the GRanges objects coresponding to the non-significant parts of the data:
     #Indeed, you will compare positions of the significant parts of the data with resampling done on the ENTIRETY of the data (comprising significant 
     #and non-significant regions). Still, I have included to this script and to Superimposition-Paper/GRanges_Objects/ GRanges objects corresponding
     #to the non-significant parts of the data. Feel free to use them as negative controls or if you want to test other things.
@@ -67,36 +67,7 @@ ATH: I need to change the paths so it's cleaner.
 #Whole genome assembly (NOT WGseq): Could be used with RegioneR if no resampling.
     genomecharr <- readRDS("/Users/sebma/Desktop/GRanges_Objects/genome_noNW_nomit_GR.rds")
   
-################### Overlaps between whole datasets, randomize over whole genome ######################### 
-    ############### OLD STUFF
-    
-    #RRBS vs RAD
-    RRBSvsRAD <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=RADallpos_20kpeak_noNW_nomit_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
-    plot(RRBSvsRAD)
-      
-    #RRBS vs WG (not sure if interesting: WGseq has the whole genome more or less. Also should re-generate the WGseq GR files)
-    RRBSvsWG <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=WGpeaks_NConly_nomit_allwindows_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
-    plot(RRBSvsWG)
-    
-    #RRBS vs Transcriptome genes
-    RRBSvsTrans <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
-    plot(RRBSvsTrans)
-    
-    #RAD vs WG
-    RADvsWG <- overlapPermTest(A=RADallpos_20kpeak_noNW_nomit_GR_trim, B=WGpeaks_NConly_nomit_allwindows_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
-    plot(RADvsWG)
-    
-    #RAD vs Transcriptome genes
-    RADvsTrans <- overlapPermTest(A=RADallpos_20kpeak_noNW_nomit_GR_trim, B=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
-    plot(RADvsTrans)
-    
-    #WG vs Transcriptome genes
-    WGvsTrans <- overlapPermTest(A=WGpeaks_NConly_nomit_allwindows_GR_trim, B=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
-    plot(WGvsTrans)
-    
-    
-   
-##################################### RESAMPLE REGIONS ########################################
+################# OVERLAP ANALYSES USING THE RESAMPLEREGIONS FUNCTION ########################################
 
     #signif CpGs vs signif RAD
     ptsignifCpG_signifRAD <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
