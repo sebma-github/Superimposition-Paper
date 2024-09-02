@@ -12,10 +12,15 @@ ATH: I need to change the paths so it's cleaner.
 ############################################# LOAD DATA ######################################################
 #Load GRanges objects of the datasets of interest located in Superimposition-Paper/GRanges_Objects/ 
 #These were made with thescript: Superimposition-Paper/GRanges_Objects/makeGRanges_outofdatasets.R
-#"no_NW" indicates that the dataset does not comprise data from unplaced scaffolds
+#"no_NW" or "NC_only" indicates that the dataset does not comprise data from unplaced scaffolds
 #"nomit" or "noMit" indicate that the dataset does not comprise data from the mitochondrial scaffold
+#"Trimmed" or "_trim" indicates that the GRanges object were trimmed to remove sequences outside the boundaries of a scaffold.
+    #For instance, if a SNP is located 500bp before the end of a scaffold, then if I set-up a peak that goes from 10kb 
+    #downstream to 10kb upstream of this base, the GRanges object will actually exceed the end of the scaffold by 9500bp.
+    #Because I did not know whether this could confuse the permutation software or not, I decided to trim all sequences outside the scaffolds.
+    #Thus, GRanges objects do not all have exactly the same size. (Some are more equal than others #AnimalFarm).
 
-  #Methylation  (ATH: These do not have a peak around them. Just an Irange of 2bp)
+  #Methylation  (These do not have a peak around them. Just an Irange of 2bp)
     #significant CpGs by morph (Morph, MorphxTime, MorphxSex)
     glm27_signifmorph_noNW_nomit_GR <- readRDS("~/glm27_signifmorphall_noNW_nomit_GR.rds")
     #non-significant CpGs:
@@ -25,22 +30,21 @@ ATH: I need to change the paths so it's cleaner.
     #All signifCpGs by Time (Time, Time xMorph, TimexSex) for negative control
     glm27_signiftime_noNW_nomit_GR <- readRDS("~/glm27_signiftimeall_noNW_nomit_GR.rds")
     
-    
-  #RADseq data  
-    #significant RADseq SNPs (outside 2sigmas). 20kb peak.
-    RAD_2sigmas_20kpeak_noNW_nomit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/RAD_2sigmas_20kpeak_noNW_nomit_GR.rds")
-    #nonsignif RADseq positions: With 20kpeak (Trimmed)
-    RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim.rds")
+  #RADseq data (20kb peak: from 10kb downstream to 10kb upstream the SNP)
+    #significant RADseq SNPs (outside 2sigmas)
+    RAD_2sigmas_20kpeak_noNW_nomit_GR <- readRDS("~/RAD_2sigmas_20kpeak_noNW_nomit_GR.rds")
+    #nonsignif RADseq positions (Trimmed)
+    RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim <- readRDS("~/RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim.rds")
     #All RADseq positions on NC_ with 20kpeak (Trimmed) 
-    RADallpos_20kpeak_noNW_nomit_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
+    RADallpos_20kpeak_noNW_nomit_GR_trim <- readRDS("~/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
     
-  #WGseq data (100kb peaks)
+  #WGseq data (100kb peaks: setup by Alexander)
     #Significant regions outside 2 sigmas (trimmed)
-    WGSNPs_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WG_2sigma_NConly_nomit_100k_GR_trim.rds") 
+    WGSNPs_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WG_2sigma_NConly_nomit_100k_GR_trim.rds") 
     #Non-significant regions (Trimmed)
-    WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim.rds")
+    WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim <- readRDS("~/WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim.rds")
     #All WGseq regions (Trimmed)
-    WGpeaks_NConly_nomit_allwindows_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WGpeaks_NConly_nomit_allwindows_GR_trim.rds")
+    WGpeaks_NConly_nomit_allwindows_GR_trim <- readRDS("~/WGpeaks_NConly_nomit_allwindows_GR_trim.rds")
        
   #Transcriptome data (Expression) ATH: Check how I made these.
     #ATH: 146 DE genes are not in the list of genes in the expr_fullref.tsv
