@@ -272,8 +272,8 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 
 ######### Evaluate whether there is congruence in terms of morph specific peaks in significant datasets    
 
-#Load morph specific data:
-    #RAD data (ATH OLD DATA, BIAS BECAUSE OF SNPs WITH SAME FST)
+#Load morph specific data: ATH: I should move this UP.
+    #RAD data (ATH OLD DATA, BIAS BECAUSE OF SNPs WITH SAME FST) ==> Make a file to explain this.
     # ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR.rds")
     # ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR.rds")
     # ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR.rds")
@@ -401,8 +401,6 @@ plot(ptnonsignifCpG_signifRAD)
     RRBSvsRAD <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=RADallpos_20kpeak_noNW_nomit_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
     plot(RRBSvsRAD)
 
-######################################################
-#Reminder for self (Sebbi), GRanges object on my computer located at "/Users/sebma/Desktop/GRanges_Objects/"
 
 
 
