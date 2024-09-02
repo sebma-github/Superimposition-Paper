@@ -349,35 +349,8 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     plot(DEPL_WGPL2)
     
 
-############ Calculate NumOverlaps between the different datasets
-#LOAD DATA
-#whole RRBS dataset but without the mitochondrial scaffold
-glm27_allPos_noNW_noMit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/glm27_allPos_noNW_noMit_GR.rds")
-#All RADseq positions on NC_ with 20kpeak (Trimmed) 
-RADallpos_20kpeak_noNW_nomit_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
-#All transcriptome genes on NC_ (I think there is no mitochondrial data in transcriptome)
-allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim.rds")
-#WGseq data, just to have an idea. ATH: I can't have an idea because there are reps..
-WGpeaks_NConly_allwindows_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WGpeaks_NConly_allwindows_GR_trim.rds")
 
-numOverlaps(glm27_allPos_noNW_noMit_GR, RADallpos_20kpeak_noNW_nomit_GR_trim) #2210 overlaps, 
-# out of 8000 that's actually still pretty good.. So I should find the same results.
-numOverlaps(RADallpos_20kpeak_noNW_nomit_GR_trim, allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim) #8540 overlaps
-numOverlaps(glm27_allPos_noNW_noMit_GR,allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim)
-numOverlaps(glm27_allPos_noNW_noMit_GR,WGpeaks_NConly_allwindows_GR_trim)
-
-#I feel like this should already be enough to judge whether the significant ones are enriched.
-#Check again what it says with the significant ones.
-#signif WG
-WGSNPs_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WG_2sigma_NConly_nomit_GR_trim.rds") 
-#Signif RRBS.
-glm27_signifmorphall_noNW_nomit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/glm27_signifmorphall_noNW_nomit_GR.rds") 
-#signif RAD
-RAD_2sigmas_20kpeak_noNW_nomit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/RAD_2sigmas_20kpeak_noNW_nomit_GR.rds")
-#signif Transcriptome
-DEgenesFullInfo_NConly_uniq_20kbpeak_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_20kbpeak_GR.rds")
-
-
+#Are these not above?
 #Signif CpGs vs Signif WG
 ptsignifCpG_signifWG <- permTest(A=glm27_signifmorphall_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
                                  evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
@@ -403,7 +376,8 @@ plot(ptnonsignifCpG_signifRAD)
     RRBSvsRAD <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=RADallpos_20kpeak_noNW_nomit_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
     plot(RRBSvsRAD)
 
-
+############ Calculate NumOverlaps between the different datasets
+numOverlaps(glm27_allPos_noNW_noMit_GR, RADallpos_20kpeak_noNW_nomit_GR_trim) #2210 overlaps, 
 
 
 
