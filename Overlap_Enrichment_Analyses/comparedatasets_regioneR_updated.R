@@ -33,6 +33,8 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     glm27_allPos_noNW_noMit_GR <- readRDS("~/glm27_allPos_noNW_noMit_GR.rds")
     #All signifCpGs by Time (Time, Time xMorph, TimexSex) for negative control
     glm27_signiftime_noNW_nomit_GR <- readRDS("~/glm27_signiftimeall_noNW_nomit_GR.rds")
+
+                #MORPH SPECIFIC methylation Data does not exist (not possible to establish congruence)   
     
   #RADseq data (20kb peak: from 10kb downstream to 10kb upstream the SNP)
     #significant RADseq SNPs (outside 2sigmas)
@@ -41,7 +43,17 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim <- readRDS("~/RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim.rds")
     #All RADseq positions on NC_ with 20kpeak (Trimmed) 
     RADallpos_20kpeak_noNW_nomit_GR_trim <- readRDS("~/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
-    
+
+                #MORPH SPECIFIC ddRAD significant data
+                #RAD data (ATH OLD DATA, BIAS BECAUSE OF SNPs WITH SAME FST) ==> Make a file to explain this.
+                # ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR.rds")
+                # ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR.rds")
+                # ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR.rds")
+                #NEW RAD 
+                ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_LBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
+                ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_SBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
+                ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_PLonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
+
   #WGseq data (100kb peaks, as identified by Alexander)
     #Significant regions outside 2 sigmas (trimmed)
     WGSNPs_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WG_2sigma_NConly_nomit_100k_GR_trim.rds") 
@@ -49,7 +61,12 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim <- readRDS("~/WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim.rds")
     #All WGseq regions (Trimmed)
     WGpeaks_NConly_nomit_allwindows_GR_trim <- readRDS("~/WGpeaks_NConly_nomit_allwindows_GR_trim.rds")
-       
+
+                #MORPH SPECIFIC WGS significant data
+                WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
+                WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
+                WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
+
   #Transcriptome data (Expression) ATH: Check how I made these.
     #ATH: 146 DE genes are not in the list of genes in the expr_fullref.tsv
     #Need to figure out why
@@ -275,19 +292,9 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 ######### Evaluate whether there is congruence in terms of morph specific peaks in significant datasets    
 
 #Load morph specific data: ATH: I should move this UP.
-    #RAD data (ATH OLD DATA, BIAS BECAUSE OF SNPs WITH SAME FST) ==> Make a file to explain this.
-    # ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR.rds")
-    # ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR.rds")
-    # ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR.rds")
-    #NEW RAD 
-    ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_LBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
-    ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_SBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
-    ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_PLonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
+   
     
-    #WG data
-    WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
-    WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
-    WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("/Users/sebma/Desktop/GRanges_Objects/WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
+    
     
     #DE data
     DEgenesFullInfo_NConly_uniq_LBonly_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_LBonly_20k_GR.rds")
