@@ -150,293 +150,67 @@ library(regioneR)
 
 #Supplementary Figure 7
     #A) Regions of genetic differentiation (WGS) and DE genes overlap more than expected by chance. (resampling on all WG regions) 
-        CODE
+        ptsignifWG_DE <- permTest(A=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, ntimes=1000, randomize.function=resampleRegions, universe=WGpeaks_NConly_nomit_allwindows_GR_trim,
+                              evaluate.function=numOverlaps, B=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, verbose=FALSE)  
+        plot(ptsignifWG_DE)
 
+                ATH: signif WGS VS all genes also gives enrichment (but lower Z-score):
+                ptsignifWG_allgenes <- permTest(A=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, ntimes=1000, randomize.function=resampleRegions, universe=WGpeaks_NConly_nomit_allwindows_GR_trim,
+                              evaluate.function=numOverlaps, B=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, verbose=FALSE)  
+                plot(ptsignifWG_allgenes)
+                
 
     #B) Regions of genetic differentiation (ddRAD) and DE genes tend towards overlap enrichment.
-        CODE
+        ptsignifRAD_DE <- permTest(A=RAD_2sigmas_20kpeak_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
+                                     evaluate.function=numOverlaps, B=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, verbose=FALSE)  
+        plot(ptsignifRAD_DE)
 
 #Supplementary Figure 8: 
 #Tests for overlap of CpGs differently methylated by morphs (tested with linear model in R, Matlosz et al. 2022) and 
 #regions of genetic differentiation (from WGS data).
-        CODE
+        ptsignifCpG_signifWG <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
+                                      evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
+        plot(ptsignifCpG_signifWG)
 
 #Supplementary Figure XX10: 
 #CpGs differently methylated by timepoint (“Time”, “Time X Morph” and “Time X Sex”) are not enriched in regions of genetic differentiation (WGS).
-        CODE
+        ptsignifCpGTime_signifWG <- permTest(A=glm27_signiftime_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
+                                     evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
+        plot(ptsignifCpGTime_signifWG)
 
 #Supplementary Figure XX9: 
 #Differently expressed genes and differently methylated CpGs do not overlap more or less than expected.
-        CODE
+        ptsignifCpG_DE <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
+                                     evaluate.function=numOverlaps, B=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, verbose=FALSE)  
+        plot(ptsignifCpG_DE)
 
 #Supplemental Figure 9: Differently methylated CpGs are enriched in all regions sequenced by RADseq, regardless of FST value. 
     #A) Differentially methylated CpGs between morphs are enriched close to outlier SNPs from the ddRAD. 
-        CODE
+        ptsignifCpG_signifRAD <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
+                                      evaluate.function=numOverlaps, B=RAD_2sigmas_20kpeak_noNW_nomit_GR, verbose=FALSE, mc.set.seed=FALSE)  
+        plot(ptsignifCpG_signifRAD)
 
     #B) Differentially methylated CpGs between morphs are also enriched close to all genomic positions sequenced by ddRAD, regardless of FST value.
-        CODE
+        ptsignifCpG_allRAD <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
+                                      evaluate.function=numOverlaps, B=RADallpos_20kpeak_noNW_nomit_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
+        plot(ptsignifCpG_allRAD)
 
 #Supplementary Figure xxxx: 
 #ddRAD SNPs are not enriched in regions close to differentially methylated CpGs, compared with the rest of the ddRAD dataset.
-        CODE
-
-
-
-
-
-
-
-
-
-    #signif CpGs vs signif RAD
-    ptsignifCpG_signifRAD <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                      evaluate.function=numOverlaps, B=RAD_2sigmas_20kpeak_noNW_nomit_GR, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifCpG_signifRAD)
-    
-    #Signif CpGs vs nonsignif RAD
-    ptsignifCpG_nonsignifRAD <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=5000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                         evaluate.function=numOverlaps, B=RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifCpG_nonsignifRAD)
-    
-    #Try signif CpGs vs the whole RAD dataset
-    ptsignifCpG_allRAD <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                      evaluate.function=numOverlaps, B=RADallpos_20kpeak_noNW_nomit_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifCpG_allRAD)
-    
-    #Non sgnif CpGs vs the whole RAD dataset
-    ptnonsignifCpG_allRAD <- permTest(A=glm27_nonsignifmorphall_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                   evaluate.function=numOverlaps, B=RADallpos_20kpeak_noNW_nomit_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptnonsignifCpG_allRAD)
-    
-    #Just for fun, what happens with signifCpGstime ==> Same as with signifCpGsMorph.
-    ptsignifCpGTime_allRAD <- permTest(A=glm27_signiftime_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                   evaluate.function=numOverlaps, B=RADallpos_20kpeak_noNW_nomit_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifCpGTime_allRAD)
-    
-    #NEED TO DO SIGNIF RAD vs SIGNIF CPG WITH UNIVERSE = ALL RAD ########################
-    ptsignifRAD_signifCpG <- permTest(A=RAD_2sigmas_20kpeak_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
+        ptsignifRAD_signifCpG <- permTest(A=RAD_2sigmas_20kpeak_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
                                       evaluate.function=numOverlaps, B=glm27_signifmorph_noNW_nomit_GR, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifRAD_signifCpG)
-    # ==> Non significant
-    
-    
-##################   
-    #Signif CpGs vs WG
-    ptsignifCpG_signifWG <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                      evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifCpG_signifWG)
-    
-    #Signif CpGs vs non-signif WG
-    ptsignifCpG_nonsignifWG <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                     evaluate.function=numOverlaps, B=WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifCpG_nonsignifWG)
-    
-    #Negative control with Signif Timepoints
-    ptsignifCpGTime_signifWG <- permTest(A=glm27_signiftime_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                     evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE, mc.set.seed=FALSE)  
-    plot(ptsignifCpGTime_signifWG)
-    
-    
-##################    
-    #Signif CpGs vs DE genes
-    ptsignifCpG_DE <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                     evaluate.function=numOverlaps, B=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, verbose=FALSE)  
-    plot(ptsignifCpG_DE)
-    
-    #Non-signif CpGs vs DE genes
-    ptnonsignifCpG_DE <- permTest(A=glm27_nonsignifmorphall_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                               evaluate.function=numOverlaps, B=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, verbose=FALSE)  
-    plot(ptnonsignifCpG_DE)
-    
-    #signif CpGs vs nonDE genes
-    ptsignifCpG_nonDE <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                               evaluate.function=numOverlaps, B=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, verbose=FALSE)  
-    plot(ptsignifCpG_nonDE)
-  
-    
-##################
-    #Signif RAD vs DE genes
-    ptsignifRAD_DE <- permTest(A=RAD_2sigmas_20kpeak_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
-                                     evaluate.function=numOverlaps, B=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, verbose=FALSE)  
-    plot(ptsignifRAD_DE)
-    
-    #Nonsignif RAD vs DE
-    ptNonsignifRAD_DE <- permTest(A=RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim, ntimes=1000, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
-                               evaluate.function=numOverlaps, B=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, verbose=FALSE)  
-    plot(ptNonsignifRAD_DE)
-    
-    #Basically it is non significant. 
-   
-    #Try DE vs RAD even though it is not the best
-    ptDE_signifRAD <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=1000, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                               evaluate.function=numOverlaps, B=RAD_2sigmas_20kpeak_noNW_nomit_GR, verbose=FALSE)  
-    plot(ptDE_signifRAD)
-   
-##################
-    #DE genes vs Signif WG
-    ptsignifDE_WG <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=1000, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                              evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    plot(ptsignifDE_WG)
-    
-    #DE genes vs Signif WG but without the 146 genes that are missing from the whole list
-    ptsignifDE2_WG <- permTest(A=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, ntimes=1000, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                              evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    plot(ptsignifDE2_WG)
-    
-    #DE genes vs non-signif WG
-    ptsignifDE_nonsignifWG <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=50, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                              evaluate.function=numOverlaps, B=WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    plot(ptsignifDE_nonsignifWG)
-    
-    #DE genes vs whole WG data
-    ptsignifDE_WGwhole <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=1000, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                              evaluate.function=numOverlaps, B=WGpeaks_NConly_nomit_allwindows_GR_trim, verbose=FALSE)  
-    plot(ptsignifDE_WGwhole)
-    
-    #That is great result. 
-    #I should do it in the same way I did the RAD vs DE though. But I can't think straight into which one is the best way to do stuff
-    ptsignifWG_DE <- permTest(A=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, ntimes=1000, randomize.function=resampleRegions, universe=WGpeaks_NConly_nomit_allwindows_GR_trim,
-                              evaluate.function=numOverlaps, B=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, verbose=FALSE)  
-    plot(ptsignifWG_DE)
-    
-    #Try WG vs the whole genes dataset
-    ptsignifWG_allgenes <- permTest(A=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, ntimes=1000, randomize.function=resampleRegions, universe=WGpeaks_NConly_nomit_allwindows_GR_trim,
-                              evaluate.function=numOverlaps, B=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, verbose=FALSE)  
-    plot(ptsignifWG_allgenes)
-    #Not good
-    
-    
-#########################    
-    
-    #Signif RAD vs Signif WG
-    ptsignifRAD_signifWG_2sig <- permTest(A=RAD_2sigmas_20kpeak_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
-                                     evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    plot(ptsignifRAD_signifWG_2sig)
-    #Same thing wooohooo. So I just use these (2sigma data) now instead. 
-    
-    
-    #Signif RAD vs nonsignifWG
-    ptsignifRAD_nonsignifWG <- permTest(A=RAD_2sigmas_20kpeak_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
-                                     evaluate.function=numOverlaps, B=WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    plot(ptsignifRAD_nonsignifWG)
-    
-    #THIS IS WHERE I STOPPED 
-    "red" "red""red""red""red""red""red""red""red""red""red""red""red""red""red""red""red""red""red""red"
-
-    
-##################
-    #DE genes and RADSnps
-    ptDE_signifRAD <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=1000, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                               evaluate.function=numOverlaps, B=RAD_2sigmas_20kpeak_noNW_nomit_GR, verbose=FALSE)  
-    plot(ptDE_signifRAD)
-    
-    #DE genes and RADSnps, but without the missing genes 
-    ptDE2_signifRAD <- permTest(A=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, ntimes=1000, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                               evaluate.function=numOverlaps, B=RAD_2sigmas_20kpeak_noNW_nomit_GR, verbose=FALSE)  
-    plot(ptDE2_signifRAD)
-    
-    #DE genes and non-signif RADsnps
-    ptDE_nonsignifRAD <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=50, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                               evaluate.function=numOverlaps, B=RADallpos_20kpeak_noNW_GR_trim, verbose=FALSE)  
-    plot(ptDE_nonsignifRAD)
-    #Weird. I guess I can't take this into account..
-    
-    #DE genes and the whole RAD dataset
-    ptDE_allRAD <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=500, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                               evaluate.function=numOverlaps, B=RADallpos_20kpeak_noNW_GR_trim, verbose=FALSE)  
-    plot(ptDE_allRAD)
-    
-    
-    
-    #DE genes and RADSnps but with 100kbp RAD so I can compare it to WG
-    ptDE_signifRAD100kb <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=500, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                               evaluate.function=numOverlaps, B=RAD0p2_100kpeak_GR_trim, verbose=FALSE)  
-    plot(ptDE_signifRAD100kb)
-    
-    #DE genes and nonsignif RAD (or the whole RAD dataset) but with 100kbp
-    ptDE_nonsignifRAD100kb <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=500, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                                    evaluate.function=numOverlaps, B=RADpeaks100kb_nonsignif_GR_trim, verbose=FALSE)  
-    plot(ptDE_nonsignifRAD100kb)
-    
-    #DE genes and the whole RAD dataset with 100kb
-    
-    
-#################
-    #DE genes and WGpeaks
-    ptDE_signifWG <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=50, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                               evaluate.function=numOverlaps, B=WGpeaks_NConly_Signif0p2_GR_trim, verbose=FALSE)  
-    plot(ptDE_signifWG)
-    
-    #DE genes and nonsignif WGpeaks
-    ptDE_nonsignifWG <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=50, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                              evaluate.function=numOverlaps, B=WGpeaks_NConly_nonsignif_GR_trim, verbose=FALSE)  
-    plot(ptDE_nonsignifWG)
-    
-    #WGpeaks and DE genes
-    ptsignifWG_DE <- permTest(A=WGpeaks_NConly_Signif0p2_GR_trim, ntimes=50, randomize.function=resampleRegions, universe=WGpeaks_NConly_allwindows_GR_trim,
-                               evaluate.function=numOverlaps, B=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, verbose=FALSE)  
-    plot(ptsignifWG_DE)
-    
-    #DE genes and non signif WGpeaks
-    ptDE_nonsignifWG <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=50, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                              evaluate.function=numOverlaps, B=WGpeaks_NConly_nonsignif_GR_trim, verbose=FALSE)  
-    plot(ptDE_nonsignifWG)
-    
-    #DE genes and the whole WG dataset?
-    ptDE_AllWG <- permTest(A=DEgenesFullInfo_NConly_uniq_20kbpeak_GR, ntimes=50, randomize.function=resampleRegions, universe=allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim,
-                              evaluate.function=numOverlaps, B=WGpeaks_NConly_allwindows_GR_trim, verbose=FALSE)  
-    plot(ptDE_AllWG)
-        
-
-######### Evaluate whether there is congruence in terms of morph specific peaks in significant datasets    
-
-#Load morph specific data: ATH: I should move this UP.
-#Perform comparison analyses
-
-    
-   
-    
-    plot(DELB_WGLB)
-    plot(DELB_WGLB2)
-    plot(DESB_WGSB)
-    plot(DESB_WGSB2)
-    plot(DEPL_WGPL)
-    plot(DEPL_WGPL2)
-    
+        plot(ptsignifRAD_signifCpG)
 
 
-#Are these not above?
-#Signif CpGs vs Signif WG
-ptsignifCpG_signifWG <- permTest(A=glm27_signifmorphall_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                 evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-plot(ptsignifCpG_signifWG)
+####################################### III. MISCELLANEOUS / OLD / EXAMPLES ######################################################
+# Overlaps between whole datasets, randomize over the whole genome 
+# If you do not want to use the resampleRegions function, you could decide to do the comparison with randomisation from the whole genome
+# In this case use the assembly as GRanges as "genome"
+    #Example: RRBS vs RAD
+        RRBSvsRAD <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=RADallpos_20kpeak_noNW_nomit_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
+        plot(RRBSvsRAD)
 
-#Signif CpGs vs Signif RADseq 
-ptsignifCpG_signifRAD <- permTest(A=glm27_signifmorphall_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                 evaluate.function=numOverlaps, B=RAD_2sigmas_20kpeak_noNW_nomit_GR, verbose=FALSE)  
-plot(ptsignifCpG_signifRAD)
-
-#Nonsignif CpGs vs Signif RADseq
-ptnonsignifCpG_signifRAD <- permTest(A=glm27_nonsignifmorphall_noNW_nomit_GR, ntimes=50, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
-                                  evaluate.function=numOverlaps, B=RAD_2sigmas_20kpeak_noNW_nomit_GR, verbose=FALSE)  
-plot(ptnonsignifCpG_signifRAD)
-
-#Need to check the opposite: Signif CpGs vs non signif RAD
-
-######################################################
-################### Overlaps between whole datasets, randomize over whole genome ######################### 
-    ############### OLD STUFF, Leaving here just for example
-    
-    #RRBS vs RAD
-    RRBSvsRAD <- overlapPermTest(A=glm27_allPos_noNW_noMit_GR, B=RADallpos_20kpeak_noNW_nomit_GR_trim, ntimes=50, genome=genomecharr, mc.set.seed=FALSE)
-    plot(RRBSvsRAD)
-
-############ Calculate NumOverlaps between the different datasets
-numOverlaps(glm27_allPos_noNW_noMit_GR, RADallpos_20kpeak_noNW_nomit_GR_trim) #2210 overlaps, 
-
-
-
-
-
-
+# If you just want to calculate the number of overlaps between two datasets, use the numOverlaps() function
+    #Example: overlaps between all CpGs in RRBS and the whole RAD dataset
+        numOverlaps(glm27_allPos_noNW_noMit_GR, RADallpos_20kpeak_noNW_nomit_GR_trim) 
 
