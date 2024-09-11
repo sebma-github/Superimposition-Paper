@@ -6,3 +6,4 @@
 
 Morph-specific datasets:
 **ddRAD_SNPs_LBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds**, **ddRAD_SNPs_SBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds**, and **ddRAD_SNPs_PLonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds** are the list of significant RADseq SNPs divided by morphs.
+Note: Sometimes, two morphs have the same Fst value for the same SNP. In this case, the SNP appears in both files.
