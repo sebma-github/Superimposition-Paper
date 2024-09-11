@@ -1,6 +1,6 @@
 library(dplyr)
 library(sqldf)
-library(regioneR)  #browseVignettes("regioneR") #For infos
+library(regioneR)
 
 #Note: Setting seed for reproducible results does not seem to work with RegioneR resampling of regions? 
 #It is not a big deal when using as big as 1000 permutations (even 50 permutations already gives consistent results).
@@ -148,8 +148,37 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
                                evaluate.function=numOverlaps, B=WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)
         plot(RADPL_WGPL)
 
-#Supplementary Figure XX
+#Supplementary Figure 7
+    #A) Regions of genetic differentiation (WGS) and DE genes overlap more than expected by chance. (resampling on all WG regions) 
+        CODE
 
+
+    #B) Regions of genetic differentiation (ddRAD) and DE genes tend towards overlap enrichment.
+        CODE
+
+#Supplementary Figure 8: 
+#Tests for overlap of CpGs differently methylated by morphs (tested with linear model in R, Matlosz et al. 2022) and 
+#regions of genetic differentiation (from WGS data).
+        CODE
+
+#Supplementary Figure XX10: 
+#CpGs differently methylated by timepoint (“Time”, “Time X Morph” and “Time X Sex”) are not enriched in regions of genetic differentiation (WGS).
+        CODE
+
+#Supplementary Figure XX9: 
+#Differently expressed genes and differently methylated CpGs do not overlap more or less than expected.
+        CODE
+
+#Supplemental Figure 9: Differently methylated CpGs are enriched in all regions sequenced by RADseq, regardless of FST value. 
+    #A) Differentially methylated CpGs between morphs are enriched close to outlier SNPs from the ddRAD. 
+        CODE
+
+    #B) Differentially methylated CpGs between morphs are also enriched close to all genomic positions sequenced by ddRAD, regardless of FST value.
+        CODE
+
+#Supplementary Figure xxxx: 
+#ddRAD SNPs are not enriched in regions close to differentially methylated CpGs, compared with the rest of the ddRAD dataset.
+        CODE
 
 
 
