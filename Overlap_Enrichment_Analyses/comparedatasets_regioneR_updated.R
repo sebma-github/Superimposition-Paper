@@ -45,11 +45,6 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     RADallpos_20kpeak_noNW_nomit_GR_trim <- readRDS("~/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
 
                 #MORPH SPECIFIC ddRAD significant data
-                #RAD data (ATH OLD DATA, BIAS BECAUSE OF SNPs WITH SAME FST) ==> Make a file to explain this.
-                # ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR.rds")
-                # ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR.rds")
-                # ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR.rds")
-                #NEW RAD 
                 ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_LBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
                 ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_SBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
                 ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_PLonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
