@@ -34,7 +34,8 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     #All signifCpGs by Time (Time, Time xMorph, TimexSex) for negative control
     glm27_signiftime_noNW_nomit_GR <- readRDS("~/glm27_signiftimeall_noNW_nomit_GR.rds")
 
-                #MORPH SPECIFIC methylation Data does not exist (not possible to establish congruence)   
+                #MORPH SPECIFIC methylation data
+                #Does not exist (not possible to establish congruence)   
     
   #RADseq data (20kb peak: from 10kb downstream to 10kb upstream the SNP)
     #significant RADseq SNPs (outside 2sigmas)
