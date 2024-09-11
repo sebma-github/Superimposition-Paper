@@ -3,8 +3,8 @@ library(sqldf)
 library(regioneR)  #browseVignettes("regioneR") #For infos
 
 #Note: Setting seed for reproducible results does not seem to work with RegioneR resampling of regions? 
-#Anyways, it is not a big deal when using as big as 1000 permutations (even 50 permutations already gives consistent results).
-#Because of this, while the result of the analyses will be the same, do not be surprised if the histogram bars on the graphs change 
+#It is not a big deal when using as big as 1000 permutations (even 50 permutations already gives consistent results).
+#But because of this, while the result of the analyses will be the same, do not be surprised if the histogram bars on the graphs change 
 #slightly from one run of the script to the other.
 
 ############################################# LOAD DATA ######################################################
@@ -12,9 +12,9 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 #These were made with thescript: Superimposition-Paper/GRanges_Objects/makeGRanges_outofdatasets.R
 
 #Notes:
-#"no_NW" or "NC_only" indicates that the dataset does not comprise data from unplaced scaffolds
-#"nomit" or "noMit" indicate that the dataset does not comprise data from the mitochondrial scaffold
-#"Trimmed" or "_trim" indicates that the GRanges object were trimmed to remove sequences outside the boundaries of a scaffold.
+#"no_NW" or "NC_only" in file name indicates that the dataset does not comprise data from unplaced scaffolds
+#"nomit" or "noMit" in file name indicates that the dataset does not comprise data from the mitochondrial scaffold
+#"Trimmed" or "_trim" in file name indicates that the GRanges object were trimmed to remove sequences outside the boundaries of a scaffold.
     #For instance, if a SNP is located 500bp before the end of a scaffold, then if I set-up a peak that goes from 10kb 
     #downstream to 10kb upstream of this base, the GRanges object will actually exceed the end of the scaffold by 9500bp.
     #Because I did not know whether this could confuse the permutation software or not, I decided to trim all sequences outside the scaffolds.
@@ -63,27 +63,41 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
                 WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
                 WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim <- readRDS("~/WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
 
-  #Transcriptome data (Expression) ATH: Check how I made these.
-    #ATH: 146 DE genes are not in the list of genes in the expr_fullref.tsv
-    #Need to figure out why
-    #With peaks 20kb (10kb upstream of start and 10kb downstream of end)
-    #Signif DE
-    DEgenesFullInfo_NConly_uniq_20kbpeak_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_20kbpeak_GR.rds")
-    #DE genes but without the 146 that are missing from the whole table
-    DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR.rds")
-    
-    #All genes (Trimmed)
+  #Transcriptome data (20kb peaks)
+    #List of all genes in the transcriptome, made from the realigned transcriptome data to the charr genome by Alexander
     allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim <- readRDS("~/allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim.rds")
-    #Non signif genes 
-    nonDEgenes_NConly_uniq_20kbpeak_GR <- readRDS("~/nonDEgenes_NConly_uniq_20kbpeak_GR_trim.rds")
+    #List of the DE genes, as identified by Alexander
+        #DEgenesFullInfo_NConly_uniq_20kbpeak_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_20kbpeak_GR.rds")
+        #HOWEVER, 146 of these DE genes are not in the full gene list. Why? I do not know. Did Alexander use different raw files to generate both?
+        #Is there an issue with the file I used to get the ID of the genes? (i.e., is the file I used incomplete?)
+        #Because of this issue, I have also generated a list of DE genes without the 146 genes which are not in the whole gene list
+    #List of the DE genes, as identified by Alexander, minus the 146 weird genes
+    DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR <- readRDS("~/DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR.rds")
+    #I personnally prefer using this file. It removes a bit of data, but it is better for comparisons between datasets in my opinion.
+    #Feel free to use the file above if you prefer. It might be completely valid too. I just don't like that I can't figure out why there is a difference.
 
 #BONUS
 #Whole genome assembly (NOT WGseq, the whole assembly). This can be used with RegioneR if you don't want to use the resampleRegions function.
 #You can see an example of this at the end of this script. I do not think it should be used, as the resampleRegions function is,
 #to me, the most accurate. But anyway, if you want to use the assembly as a base for other functions, here it is as a GRanges object.
-   # genomecharr <- readRDS("~/genome_noNW_nomit_GR.rds")
-  
-################# OVERLAP ANALYSES USING THE RESAMPLEREGIONS FUNCTION ########################################
+   #genomecharr <- readRDS("~/genome_noNW_nomit_GR.rds")
+
+
+####################################### OVERLAP ANALYSES USING THE RESAMPLEREGIONS FUNCTION ######################################################
+#To perform these analyses, you will always need three datasets:
+#Two datasets that you want to compare the overlap of, for instance we could call them "SIGNIF_EGG" and "SIGNIF_POTATOES"
+#A third dataset called universe with which the software will perform permutation analyses (the number of permutations is signified by "ntimes=")
+#In our example, we could call this file "UNIVERSE_EGG". It contains positions for all the eggs in our egg basket, and not just the significant eggs.
+#The function then works like this 
+#result <- permTest(A=SIGNIF_EGG, ntimes=1000, randomize.function=resampleRegions, universe=UNIVERSE_EGG,
+#                   evaluate.function=numOverlaps, B=SIGNIF_POTATOES, verbose=FALSE, mc.set.seed=FALSE)
+#It will count the number of overlaps between "SIGNIF_EGG" and "SIGNIF_POTATOES". 
+#It will create 1000 subsets of "UNIVERSE_EGG" which will all have the same size as "SIGNIF_EGG".
+#It will count the number of overlaps between these subsets and "SIGNIF POTATOES".
+#At the end, number of overlaps between the subsets of universe and "SIGNIF_POTATOES" will be compared to the number of overlaps between
+#"SIGNIF_EGG" and "SIGNIF_POTATOES".
+#Results can be directly visualized with plot(result)
+
 
     #signif CpGs vs signif RAD
     ptsignifCpG_signifRAD <- permTest(A=glm27_signifmorph_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=glm27_allPos_noNW_noMit_GR,
