@@ -113,7 +113,46 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 #To simplify and clarify this script, I have only kept here the analyses leading to a Figure or Supplementary Figure in the paper.
 #But feel free to try other comparisons yourself, try other controls, switch things around, etc...
 
-#Supplementary Figure 5.
+#Figure 4 (Tests of enrichment between DE genes and regions of genetic differentiation (WGS), within each of the morphs)
+    #A) LB
+        DELB_WGLB <- permTest(A=DEwithoutmissinggenes_LBonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR,
+                          evaluate.function=numOverlaps, B=WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)
+        plot(DELB_WGLB)
+
+    #B) SB
+        DESB_WGSB <- permTest(A=DEwithoutmissinggenes_SBonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR,
+                          evaluate.function=numOverlaps, B=WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)
+        plot(DESB_WGSB)
+
+    #C) PL
+        DEPL_WGPL <- permTest(A=DEwithoutmissinggenes_PLonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR,
+                          evaluate.function=numOverlaps, B=WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)
+        plot(DEPL_WGPL)
+
+#Supplementary Figure 6 (overlap and morph congruence WGS VS RAD):
+    #A) Regions of genetic differentiation between morphs identified through ddRAD-seq and WGS overlap more than expected by chance.
+        ptsignifRAD_signifWG_2sig <- permTest(A=RAD_2sigmas_20kpeak_noNW_nomit_GR, ntimes=1000, randomize.function=resampleRegions, universe=RADallpos_20kpeak_noNW_nomit_GR_trim,
+                                         evaluate.function=numOverlaps, B=WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
+        plot(ptsignifRAD_signifWG_2sig)
+
+    #B-D) Moreover, congruence was observed between regions of genetic differentiation identified by WGS and SNPs from ddRADseq for all three sympatric morphs
+        RADLB_WGLB <- permTest(A=ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=RAD_2sigmas_20kpeak_noNW_nomit_GR,
+                                     evaluate.function=numOverlaps, B=WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
+        plot(RADLB_WGLB)
+        
+        RADSB_WGSB <- permTest(A=ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=RAD_2sigmas_20kpeak_noNW_nomit_GR,
+                               evaluate.function=numOverlaps, B=WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
+        plot(RADSB_WGSB)
+    
+        RADPL_WGPL <- permTest(A=ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=RAD_2sigmas_20kpeak_noNW_nomit_GR,
+                               evaluate.function=numOverlaps, B=WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)
+        plot(RADPL_WGPL)
+
+#Supplementary Figure XX
+
+
+
+
 
 
 
@@ -323,61 +362,10 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 ######### Evaluate whether there is congruence in terms of morph specific peaks in significant datasets    
 
 #Load morph specific data: ATH: I should move this UP.
-   
-    
-    
-    
-    #DE data
-    DEgenesFullInfo_NConly_uniq_LBonly_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_LBonly_20k_GR.rds")
-    DEgenesFullInfo_NConly_uniq_SBonly_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_SBonly_20k_GR.rds")
-    DEgenesFullInfo_NConly_uniq_PLonly_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_PLonly_20k_GR.rds")
-
-    DEwithoutmissinggenes_LBonly_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_LBonly_nomissinggene_20k_GR.rds")
-    DEwithoutmissinggenes_SBonly_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_SBonly_nomissinggene_20k_GR.rds")
-    DEwithoutmissinggenes_PLonly_20k_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_PLonly_nomissinggene_20k_GR.rds")
-    
-    
-#Load significant datasets for universe
-    #significant RADseq SNPs (outside 2sigmas). 20kb peak.
-    RAD_2sigmas_20kpeak_noNW_nomit_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/RAD_2sigmas_20kpeak_noNW_nomit_GR.rds")
-    #All DE genes. 20kb peak
-    DEgenesFullInfo_NConly_uniq_20kbpeak_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_20kbpeak_GR.rds")
-    #All DE genes but without the 146 that are missing from the whole table
-    DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR <- readRDS("/Users/sebma/Desktop/GRanges_Objects/DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR.rds")
-    
-    
 #Perform comparison analyses
-    RADLB_WGLB <- permTest(A=ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=RAD_2sigmas_20kpeak_noNW_nomit_GR,
-                                 evaluate.function=numOverlaps, B=WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
+
     
-    RADSB_WGSB <- permTest(A=ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=RAD_2sigmas_20kpeak_noNW_nomit_GR,
-                           evaluate.function=numOverlaps, B=WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    
-    RADPL_WGPL <- permTest(A=ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=RAD_2sigmas_20kpeak_noNW_nomit_GR,
-                           evaluate.function=numOverlaps, B=WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    
-    
-    plot(RADLB_WGLB)
-    plot(RADSB_WGSB)
-    plot(RADPL_WGPL)
-    
-    DELB_WGLB <- permTest(A=DEgenesFullInfo_NConly_uniq_LBonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenesFullInfo_NConly_uniq_20kbpeak_GR,
-                          evaluate.function=numOverlaps, B=WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    
-    DELB_WGLB2 <- permTest(A=DEwithoutmissinggenes_LBonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR,
-                          evaluate.function=numOverlaps, B=WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    
-    DESB_WGSB <- permTest(A=DEgenesFullInfo_NConly_uniq_SBonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenesFullInfo_NConly_uniq_20kbpeak_GR,
-                          evaluate.function=numOverlaps, B=WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    
-    DESB_WGSB2 <- permTest(A=DEwithoutmissinggenes_SBonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR,
-                          evaluate.function=numOverlaps, B=WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE) 
-    
-    DEPL_WGPL <- permTest(A=DEgenesFullInfo_NConly_uniq_PLonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenesFullInfo_NConly_uniq_20kbpeak_GR,
-                          evaluate.function=numOverlaps, B=WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)  
-    
-    DEPL_WGPL2 <- permTest(A=DEwithoutmissinggenes_PLonly_20k_GR, ntimes=1000, randomize.function=resampleRegions, universe=DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR,
-                          evaluate.function=numOverlaps, B=WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, verbose=FALSE)
+   
     
     plot(DELB_WGLB)
     plot(DELB_WGLB2)
