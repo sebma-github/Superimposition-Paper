@@ -7,7 +7,7 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 #But because of this, while the result of the analyses will be the same, do not be surprised if the histogram bars on the graphs change 
 #slightly from one run of the script to the other.
 
-############################################# LOAD DATA ######################################################
+############################################# I. LOAD DATA ######################################################
 #Load GRanges objects of the datasets of interest located in Superimposition-Paper/GRanges_Objects/ 
 #These were made with thescript: Superimposition-Paper/GRanges_Objects/makeGRanges_outofdatasets.R
 
@@ -83,7 +83,6 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
                 #DEgenesFullInfo_NConly_uniq_LBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_LBonly_20k_GR.rds")
                 #DEgenesFullInfo_NConly_uniq_SBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_SBonly_20k_GR.rds")
                 #DEgenesFullInfo_NConly_uniq_PLonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_PLonly_20k_GR.rds")
-                
                 DEwithoutmissinggenes_LBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_LBonly_nomissinggene_20k_GR.rds")
                 DEwithoutmissinggenes_SBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_SBonly_nomissinggene_20k_GR.rds")
                 DEwithoutmissinggenes_PLonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_PLonly_nomissinggene_20k_GR.rds")
@@ -96,7 +95,7 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
    #genomecharr <- readRDS("~/genome_noNW_nomit_GR.rds")
 
 
-####################################### OVERLAP ANALYSES USING THE RESAMPLEREGIONS FUNCTION ######################################################
+####################################### II. OVERLAP ANALYSES USING THE RESAMPLEREGIONS FUNCTION ######################################################
 #To perform these analyses, you will always need three datasets:
 #Two datasets that you want to compare the overlap of, for instance we could call them "SIGNIF_EGG" and "SIGNIF_POTATOES"
 #A third dataset called universe with which the software will perform permutation analyses (the number of permutations is signified by "ntimes=")
@@ -110,6 +109,15 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
 #At the end, number of overlaps between the subsets of universe and "SIGNIF_POTATOES" will be compared to the number of overlaps between
 #"SIGNIF_EGG" and "SIGNIF_POTATOES".
 #Results can be directly visualized with plot(result)
+
+#To simplify and clarify this script, I have only kept here the analyses leading to a Figure or Supplementary Figure in the paper.
+#But feel free to try other comparisons yourself, try other controls, switch things around, etc...
+
+#Supplementary Figure 5.
+
+
+
+
 
 
     #signif CpGs vs signif RAD
