@@ -46,6 +46,7 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     RADallpos_20kpeak_noNW_nomit_GR_trim <- readRDS("~/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
 
                 #MORPH SPECIFIC ddRAD significant data
+                #Note: Sometimes, two morphs have the same Fst value for the same SNP. In this case, the SNP appears in both files. 
                 ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_LBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
                 ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_SBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
                 ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- readRDS("~/ddRAD_SNPs_PLonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
