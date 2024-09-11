@@ -76,6 +76,18 @@ library(regioneR)  #browseVignettes("regioneR") #For infos
     #I personnally prefer using this file. It removes a bit of data, but it is better for comparisons between datasets in my opinion.
     #Feel free to use the file above if you prefer. It might be completely valid too. I just don't like that I can't figure out why there is a difference.
 
+                #MORPH SPECIFIC transcriptome data
+                #Again, two options, I prefer the datasets without the missing genes.
+                #But I leave these too in case you are curious.
+                #DEgenesFullInfo_NConly_uniq_LBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_LBonly_20k_GR.rds")
+                #DEgenesFullInfo_NConly_uniq_SBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_SBonly_20k_GR.rds")
+                #DEgenesFullInfo_NConly_uniq_PLonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_PLonly_20k_GR.rds")
+                
+                DEwithoutmissinggenes_LBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_LBonly_nomissinggene_20k_GR.rds")
+                DEwithoutmissinggenes_SBonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_SBonly_nomissinggene_20k_GR.rds")
+                DEwithoutmissinggenes_PLonly_20k_GR <- readRDS("~/DEgenesFullInfo_NConly_uniq_PLonly_nomissinggene_20k_GR.rds")
+
+
 #BONUS
 #Whole genome assembly (NOT WGseq, the whole assembly). This can be used with RegioneR if you don't want to use the resampleRegions function.
 #You can see an example of this at the end of this script. I do not think it should be used, as the resampleRegions function is,
