@@ -33,64 +33,74 @@ library(ggplot2)
     newRADlist_NConly$highest <- pmax(newRADlist_NConly$SB,newRADlist_NConly$LB,newRADlist_NConly$PL)
 
 #ATH: Here, I realized that for some SNPs, 1 morph has an Fst of 0 while the other 2 have the same value.
-#I do not think these SNPs should be taken into account
-#Identify rows where this happens
-    newRADlist_NConly$row <- row.names(newRADlist_NConly)
-    SBLB <-  filter(newRADlist_NConly, SB == LB, SB >0, LB>0)
-    SBPL <- filter(newRADlist_NConly, SB == PL, SB >0, PL>0)
-    LBPL <- filter(newRADlist_NConly, LB == PL, LB >0, PL>0)
-    badrows <- as.numeric(c(SBLB$row,SBPL$row,LBPL$row))
-#Remove these rows from the table
-    newRADlist_NConly_good <- newRADlist_NConly[-badrowsnodup,]
+#Should these SNPs be taken into account? I remember us talking about it but can't remember what we ended up going with
+#I think I removed them
+#To remove them:
+    #Identify rows where this happens
+        newRADlist_NConly$row <- row.names(newRADlist_NConly)
+        SBLB <-  filter(newRADlist_NConly, SB == LB, SB >0, LB>0)
+        SBPL <- filter(newRADlist_NConly, SB == PL, SB >0, PL>0)
+        LBPL <- filter(newRADlist_NConly, LB == PL, LB >0, PL>0)
+        badrows <- as.numeric(c(SBLB$row,SBPL$row,LBPL$row))
+    #Remove these rows from the table
+        newRADlist_NConly_good <- newRADlist_NConly[-badrowsnodup,]
 
+#Identify what two sigmas of the distribution represents
+#This will be used to put the threshold on the plot
+    max <- mean(newRADlist_NConly$highest) + 2*sd(newRADlist_NConly$highest) #Max for RADseq = 0.41497
+#If you do not want these weird SNP mentioned before, use the other table instead
+#ATH I think I removed these SNPs from the analysis but might have calculated the threshold with the full list...
+#Will need to fix this
+#    max <- mean(newRADlist_NConly_good$highest) + 2*sd(newRADlist_NConly_good$highest) #Max for RADseq = 0.41387
 
-
-#Find what two sigmas of the distribution represents, just to put the threshold on the plot
-max <- mean(newRADlist_NConly$highest) + 2*sd(newRADlist_NConly$highest) #Max for RADseq = 0.41497
-
-
-######## Just doing some counting for barplots 26/02/24
-sum(newRADlist_NConly$SB > 0.2) # 723
-sum(newRADlist_NConly$LB > 0.2) # 466
-sum(newRADlist_NConly$PL > 0.2) # 1182
-
-sum(newRADlist_NConly$SB > 0.5) # 55
-sum(newRADlist_NConly$LB > 0.5) # 26
-sum(newRADlist_NConly$PL > 0.5) # 244
-
-##########
-
-
-#The thing is, I need to do it the same way Lea did it, with different morphs indicated
-#with different colors. That would be best.
-newRADlist_NConly <- newRADlist_NConly_good
-#Actually I think I do it below, with the Slight increase, slight decrease, etc..
+#If you want to avoid working with the weird SNPs:
+    newRADlist_NConly <- newRADlist_NConly_good
 #Separate table per morph, then rbind it.
-RAD_SB <- data.frame(newRADlist_NConly[,c(1:4)])
-RAD_LB <- data.frame(newRADlist_NConly[,c(1:3,5)])
-RAD_PL <- data.frame(newRADlist_NConly[,c(1:3,6)])
+    RAD_SB <- data.frame(newRADlist_NConly[,c(1:4)])
+    RAD_LB <- data.frame(newRADlist_NConly[,c(1:3,5)])
+    RAD_PL <- data.frame(newRADlist_NConly[,c(1:3,6)])
 
 #Prepare colname for rbind
-colnames(RAD_SB)[4] <- "Fst"
-colnames(RAD_LB)[4] <- "Fst"
-colnames(RAD_PL)[4] <- "Fst"
+    colnames(RAD_SB)[4] <- "Fst"
+    colnames(RAD_LB)[4] <- "Fst"
+    colnames(RAD_PL)[4] <- "Fst"
 
 #Add the name of the morph to prepare for the color
-RAD_SB$Comparison <- "SB vs LB/PL"
-RAD_LB$Comparison <- "LB vs SB/PL"
-RAD_PL$Comparison <- "PL vs SB/LB"
+    RAD_SB$Comparison <- "SB vs LB/PL"
+    RAD_LB$Comparison <- "LB vs SB/PL"
+    RAD_PL$Comparison <- "PL vs SB/LB"
 
 #Bind everything together
-RAD_cleanTable <- rbind(RAD_SB,RAD_LB,RAD_PL)
+    RAD_cleanTable <- rbind(RAD_SB,RAD_LB,RAD_PL)
 
-#If Fst less than max, change the Color by "Non-significant"
-RAD_cleanTable$Comparison <- ifelse(RAD_cleanTable$Fst < max, "Non-significant",RAD_cleanTable$Comparison)
+#If Fst less than max, change the Color to "Non-significant"
+    RAD_cleanTable$Comparison <- ifelse(RAD_cleanTable$Fst < max, "Non-significant",RAD_cleanTable$Comparison)
 #Relevel so I have non-significant at the end
-RAD_cleanTable$Comparison <- factor(RAD_cleanTable$Comparison)
-RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"Non-significant")
-RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"PL vs SB/LB")
-RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"SB vs LB/PL")
-RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"LB vs SB/PL")
+    RAD_cleanTable$Comparison <- factor(RAD_cleanTable$Comparison)
+    RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"Non-significant")
+    RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"PL vs SB/LB")
+    RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"SB vs LB/PL")
+    RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"LB vs SB/PL")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #I need to calculate the absolute Position of each dot. Because here it is just the basic position.
@@ -268,3 +278,8 @@ LGplot_WG
 pdf("/Users/sebma/Desktop/Manhattan_WGseq_2sigmas_201023.pdf", 20,10)
 LGplot_WG
 dev.off()
+
+
+### OLD STUFF ###
+######## Just doing some counting for barplots 26/02/24
+sum(newRADlist_NConly$SB > 0.2) # 723
