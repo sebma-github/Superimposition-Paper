@@ -34,7 +34,8 @@ library(ggplot2)
 
 #ATH: Here, I realized that for some SNPs, 1 morph has an Fst of 0 while the other 2 have the same value.
 #Should these SNPs be taken into account? I remember us talking about it but can't remember what we ended up going with
-#I think I removed them
+#I think I removed them from the graph, but kept them in the general analysis 
+#(see script *Superimposition-Paper/GRanges_Objects/makeGRanges_outofdatasets_nomit.R**)
 #To remove them:
     #Identify rows where this happens
         newRADlist_NConly$row <- row.names(newRADlist_NConly)
@@ -48,17 +49,15 @@ library(ggplot2)
 #Identify what two sigmas of the distribution represents
 #This will be used to put the threshold on the plot
     max <- mean(newRADlist_NConly$highest) + 2*sd(newRADlist_NConly$highest) #Max for RADseq = 0.41497
-#If you do not want these weird SNP mentioned before, use the other table instead
-#ATH I think I removed these SNPs from the analysis but might have calculated the threshold with the full list...
-#Will need to fix this
+#If you do not want these weird SNP mentioned before to be taken into account when calculating 2 sigmas, use the other table instead:
 #    max <- mean(newRADlist_NConly_good$highest) + 2*sd(newRADlist_NConly_good$highest) #Max for RADseq = 0.41387
+#I believe that I still went with a threshold of 0.41497 (calculated with all SNPs)
 
-#If you want to avoid working with the weird SNPs:
-    newRADlist_NConly <- newRADlist_NConly_good
+#Now for plotting purposes, I do not want to see these SNPs
 #Separate table per morph, then rbind it.
-    RAD_SB <- data.frame(newRADlist_NConly[,c(1:4)])
-    RAD_LB <- data.frame(newRADlist_NConly[,c(1:3,5)])
-    RAD_PL <- data.frame(newRADlist_NConly[,c(1:3,6)])
+    RAD_SB <- data.frame(newRADlist_NConly_good[,c(1:4)])
+    RAD_LB <- data.frame(newRADlist_NConly_good[,c(1:3,5)])
+    RAD_PL <- data.frame(newRADlist_NConly_good[,c(1:3,6)])
 
 #Prepare colname for rbind
     colnames(RAD_SB)[4] <- "Fst"
@@ -81,12 +80,6 @@ library(ggplot2)
     RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"PL vs SB/LB")
     RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"SB vs LB/PL")
     RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"LB vs SB/PL")
-
-
-
-
-
-
 
 
 
