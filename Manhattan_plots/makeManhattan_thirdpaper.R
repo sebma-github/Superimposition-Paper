@@ -1,56 +1,47 @@
-#### PACKAGES ####
-#The plan is to make a Manhattan plot that shows the significant SNPs/regions
-#For both RADseq and WGseq
-
-############
 library(dplyr)
 library(sqldf)
 library(ggplot2)
 
-#### LG DATA ####
-#Only keep info for the placed scaffolds (NOTE: NC_000861.1 is the mitochondrial genome)
-ACchrom <- read.csv("/Users/sebma/Desktop/GRanges_Objects/AC_chr_lengths.csv")
+############### LOAD INFO FOR EACH LINKAGE GROUP (SIZE, NAME, ETC...) ###################
+    ACchrom <- read.csv("~/AC_chr_lengths.csv")
 #Remove unplaced scaffolds
-ACchrom_noNW <- ACchrom %>% filter(grepl('NC_', NCBI))
+    ACchrom_noNW <- ACchrom %>% filter(grepl('NC_', NCBI))
 #Remove mitochondrial scaffold
-ACchrom_noNW_nomit <- ACchrom_noNW %>% filter(!grepl('NC_000861.1', NCBI))
-names(ACchrom_noNW_nomit) <- c("NAME","NCBI","LENGTH","START","LG","ABLENGTH")
+    ACchrom_noNW_nomit <- ACchrom_noNW %>% filter(!grepl('NC_000861.1', NCBI))
+    names(ACchrom_noNW_nomit) <- c("NAME","NCBI","LENGTH","START","LG","ABLENGTH")
+#Only keep name, start and length, add end
+    chromosome_info <- sqldf('SELECT LG, min(START), ABLENGTH
+                             FROM ACchrom_noNW_nomit
+                             GROUP BY LG')
+    names(chromosome_info) <- c("LG","START","LENGTH")
+    chromosome_info <- chromosome_info[order(chromosome_info$START),]
+    chromosome_info$END <- chromosome_info$START + chromosome_info$LENGTH
+    chromosome_info$MIDDLE <- (chromosome_info$START+chromosome_info$END)/2
+    starting <- chromosome_info$START
+    ending <- chromosome_info$END
+#Make a pattern that will be used for the alternate coloring on the plot
+    chromosome_info$pattern <- rep(c(TRUE,FALSE), length.out=nrow(chromosome_info))
 
-# talk to z about this
-chromosome_info <- sqldf('SELECT LG, min(START), ABLENGTH
-                         FROM ACchrom_noNW_nomit
-                         GROUP BY LG')
-names(chromosome_info) <- c("LG","START","LENGTH")
-chromosome_info <- chromosome_info[order(chromosome_info$START),]
 
-chromosome_info$END <- chromosome_info$START + chromosome_info$LENGTH
-chromosome_info$MIDDLE <- (chromosome_info$START+chromosome_info$END)/2
-starting <- chromosome_info$START
-ending <- chromosome_info$END
-chromosome_info$pattern <- rep(c(TRUE,FALSE), length.out=nrow(chromosome_info))
+########################## LOAD RADseq DATA #################################
+    newRADlist <- read.csv("~/vcftools_output_merged.tsv", sep="\t")
+#Keep only NC_ (placed scaffolds)
+    newRADlist_NConlymit <- newRADlist %>% filter(grepl('NC_', NCBI)) #8480 SNPs
+#Remove mitochondrial scaffold
+    newRADlist_NConly <- newRADlist_NConlymit %>% filter(!grepl('NC_000861.1', NCBI))
+#Identify the highest fst value out of the three morphs
+    newRADlist_NConly$highest <- pmax(newRADlist_NConly$SB,newRADlist_NConly$LB,newRADlist_NConly$PL)
 
-
-#### LOAD DATA ####
-################  RADseq DATA - RADseq DATA - RADseq DATA - RADseq DATA - RADseq DATA ############################
-newRADlist <- read.csv("/Users/sebma/Desktop/SNP_SLH-main/SNP_SLH-main/methylation/vcftools_output_merged.tsv", sep="\t")
-#Keep only NC_ and no mit
-newRADlist_NConlymit <- newRADlist %>% filter(grepl('NC_', NCBI)) #8480 SNPs
-newRADlist_NConly <- newRADlist_NConlymit %>% filter(!grepl('NC_000861.1', NCBI))
-#Only keep highest? Just to identify outside two sigmas I think. Then I will plot all SNPs on Manhattan
-newRADlist_NConly$highest <- pmax(newRADlist_NConly$SB,newRADlist_NConly$LB,newRADlist_NConly$PL)
-
-##### TEST FROM 27/02/24
-###Test, remove all SNPs that have a 0 value, because it means the other 2 are biased
-newRADlist_NConly$row <- row.names(newRADlist_NConly)
-SBLB <-  filter(newRADlist_NConly, SB == LB, SB >0, LB>0)
-SBPL <- filter(newRADlist_NConly, SB == PL, SB >0, PL>0)
-LBPL <- filter(newRADlist_NConly, LB == PL, LB >0, PL>0)
-
-badrows <- as.numeric(c(SBLB$row,SBPL$row,LBPL$row))
-badrowsnodup <- unique(badrows)
-
-#Remove these from the table
-newRADlist_NConly_good <- newRADlist_NConly[-badrowsnodup,]
+#ATH: Here, I realized that for some SNPs, 1 morph has an Fst of 0 while the other 2 have the same value.
+#I do not think these SNPs should be taken into account
+#Identify rows where this happens
+    newRADlist_NConly$row <- row.names(newRADlist_NConly)
+    SBLB <-  filter(newRADlist_NConly, SB == LB, SB >0, LB>0)
+    SBPL <- filter(newRADlist_NConly, SB == PL, SB >0, PL>0)
+    LBPL <- filter(newRADlist_NConly, LB == PL, LB >0, PL>0)
+    badrows <- as.numeric(c(SBLB$row,SBPL$row,LBPL$row))
+#Remove these rows from the table
+    newRADlist_NConly_good <- newRADlist_NConly[-badrowsnodup,]
 
 
 
