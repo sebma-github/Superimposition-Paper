@@ -1,9 +1,11 @@
 #### This script takes the dfs of interest and transforms them into Formal class GRanges object
 library(genomation)
-library(GenomeInfoDb) #For SeqInfo
+library(GenomeInfoDb) #For Seqinfo()
 library(dplyr)
-library(GenomicRanges) #For makeGRangesFromDataFrame
+library(GenomicRanges) #For makeGRangesFromDataFrame()
 library(ggplot2)
+
+##SCRIPT NOT CLEANED YET
 
 #Make the seqinfo (i.e. the name of each scaffold and their lengths)
     #Load the table made/extracted by Lea
