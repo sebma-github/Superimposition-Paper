@@ -44,7 +44,7 @@ library(ggplot2)
         LBPL <- filter(newRADlist_NConly, LB == PL, LB >0, PL>0)
         badrows <- as.numeric(c(SBLB$row,SBPL$row,LBPL$row))
     #Remove these rows from the table
-        newRADlist_NConly_good <- newRADlist_NConly[-badrowsnodup,]
+        newRADlist_NConly_good <- newRADlist_NConly[-badrows,]
 
 #Identify what two sigmas of the distribution represents
 #This will be used to put the threshold on the plot
@@ -81,198 +81,154 @@ library(ggplot2)
     RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"SB vs LB/PL")
     RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"LB vs SB/PL")
 
+#At the moment, we only have the position for a SNP relative to the scaffold it is in
+#Need to calculate the position on the graph based on which scaffold the SNP is in
+    mergeData <- function(datatable){
+      datatable$LG <- ACchrom_noNW_nomit$LG[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
+      datatable$START <- ACchrom_noNW_nomit$START[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
+      datatable$ABPOS <- datatable$START + datatable$POS
+      return(datatable)
+    }
+
+    RAD_cleanTable2 <- mergeData(RAD_cleanTable)
+
+############################ PLOT RADseq DATA ###############################
+#Now we have all information necessary for plotting
+    #Setup the color scheme:
+        #Old colour scheme:
+            #color <- c("#00BA38FF","#619CFFFF","#F8766DFF","black")
+        #New colour scheme:
+            color <- c("#74add1","#313695","#a50026","black")
+        names(color) <- c("LB vs SB/PL","SB vs LB/PL","PL vs SB/LB","Non-significant")
+
+    #Function built by Lea for nice plotting
+        LGplot_RAD <- ggplot()+ 
+          geom_rect(aes(NULL,NULL,xmin=starting,xmax=ending,fill=chromosome_info$pattern),
+                    ymin=-Inf,ymax=Inf,data=chromosome_info) +
+          scale_fill_manual(values = alpha(c("white","gray76"), .5)) +
+          scale_x_continuous(label=chromosome_info$LG, breaks = chromosome_info$MIDDLE) +
+          theme_classic()+ xlab("Linkage group") + ylab("Fst") + ggtitle("Positions of RADseq SNPs on charr genome") +
+          theme(axis.text.x = element_text(angle = 90, size = 8, face = "bold", vjust = 0.5),
+                axis.title.x = element_text(size=16,
+                                            margin = margin(t=15,r=0,b=10,l=0)),
+                axis.title.y = element_text(size=16,
+                                            margin = margin(t=0,r=10,b=0,l=10)),
+                panel.border = element_rect(colour = "black",fill = "NA", size = 1),
+                legend.background = element_blank(),
+                legend.title = element_text(size = 12),
+                legend.text = element_text(size = 12),
+                legend.box.background = element_rect(color = "black")) +
+          geom_point(aes(x=RAD_cleanTable2$ABPOS, y=RAD_cleanTable2$Fst, color=RAD_cleanTable2$Comparison), size=1) +
+          ylim(0,(max(RAD_cleanTable2$Fst)+0.01))  + scale_colour_manual(values = color,name="Comparison") +
+          guides(fill=FALSE) + theme(plot.title = element_text(hjust = 0.5))#+ geom_hline(yintercept=max)
+
+    #Display
+        LGplot_RAD
+
+    #Save as very long pdf that is easily readable.
+        pdf("~/Manhattan_RADseq_2sigmas_NOWEIRDSNPS_newpalette_180924.pdf", 20,10)
+        LGplot_RAD
+        dev.off()
 
 
+################################# LOAD WGseq DATA #####################################
+    WGpeaks <- read.table("~/fst_window_WG.tsv", sep=",", header = TRUE)
+#Only keep the data on NC_ 
+    WGpeaks_NConlymit <- WGpeaks %>% filter(grepl('NC_', CHROM))
+#Remove mitochondrial scaffold (actually here it doesn't change anything, I believe there are no mitochondrial sequences in this file already)
+    WGpeaks_NConly <- WGpeaks_NConlymit %>% filter(!grepl('NC_000861.1', CHROM))
 
-
-
-
-
-
-
-
-
-
-
-
-
-#I need to calculate the absolute Position of each dot. Because here it is just the basic position.
-mergeData <- function(datatable){
-  datatable$LG <- ACchrom_noNW_nomit$LG[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
-  datatable$START <- ACchrom_noNW_nomit$START[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
-  datatable$ABPOS <- datatable$START + datatable$POS
-  return(datatable)
-}
-
-RAD_cleanTable2 <- mergeData(RAD_cleanTable)
-
-#Now I have all columns of interest: NCBI, POS, Fst and Color, with Fst and POS numeric.
-#Let's try to plot.
-
-color <- c("#00BA38FF","#619CFFFF","#F8766DFF","black")
-names(color) <- c("LB vs SB/PL","SB vs LB/PL","PL vs SB/LB","Non-significant")
-
-LGplot <- ggplot()+ 
-  geom_rect(aes(NULL,NULL,xmin=starting,xmax=ending,fill=chromosome_info$pattern),
-            ymin=-Inf,ymax=Inf,data=chromosome_info) +
-  scale_fill_manual(values = alpha(c("white","gray76"), .5)) +
-  scale_x_continuous(label=chromosome_info$LG, breaks = chromosome_info$MIDDLE) +
-  theme_classic()+ xlab("Linkage group") + ylab("Fst") + ggtitle("Positions of RADseq SNPs on charr genome") +
-  theme(axis.text.x = element_text(angle = 90, size = 8, face = "bold", vjust = 0.5),
-        axis.title.x = element_text(size=16,
-                                    margin = margin(t=15,r=0,b=10,l=0)),
-        axis.title.y = element_text(size=16,
-                                    margin = margin(t=0,r=10,b=0,l=10)),
-        panel.border = element_rect(colour = "black",fill = "NA", size = 1),
-        legend.background = element_blank(),
-        legend.title = element_text(size = 12),
-        legend.text = element_text(size = 12),
-        legend.box.background = element_rect(color = "black")) +
-  geom_point(aes(x=RAD_cleanTable2$ABPOS, y=RAD_cleanTable2$Fst, color=RAD_cleanTable2$Comparison), size=1) +
-  ylim(0,(max(RAD_cleanTable2$Fst)+0.01))  + scale_colour_manual(values = color,name="Comparison") +
-  guides(fill=FALSE) + theme(plot.title = element_text(hjust = 0.5))#+ geom_hline(yintercept=max)
-
-
-LGplot
-
-#Save as very long pdf that is easily readable.
-pdf("/Users/sebma/Desktop/Manhattan_RADseq_2sigmas_NOWEIRDSNPS_280224.pdf", 20,10)
-LGplot
-dev.off()
-
-################  WGseq DATA - WGseq DATA - WGseq DATA - WGseq DATA - WGseq DATA ############################
-WGpeaks <- read.table("/Users/sebma/Desktop/RAD_WG_Meth/fst_window_WG.tsv", sep=",", header = TRUE)
-#Only keep the data on NC_ and no mit
-WGpeaks_NConlymit <- WGpeaks %>% filter(grepl('NC_', CHROM)) #(151540 obs)
-WGpeaks_NConly <- WGpeaks_NConlymit %>% filter(!grepl('NC_000861.1', CHROM)) #(151540 obs)
-########ATH I realize there are some negative Fst values. 
+#Note: Here I realized that there are some negative Fst values. 
 #From what I can see online, these negative Fst should be considered 0 I think.
 #And they show that there are more variations within than between pop? I mean we are at 2 samples per morph so it 
 #would make sense that it is not great
 #Put negative values at 0.
-WGpeaks_NConly[WGpeaks_NConly < 0] <- 0
+    WGpeaks_NConly[WGpeaks_NConly < 0] <- 0
 
-###27/02/24
-###Test, remove all SNPs that have a 0 value, because it means the other 2 are biased
-WGdf_filtered <- filter(WGpeaks_NConly, fst_SB == fst_LB, fst_SB >0, fst_LB>0)
-WGdf_filtered2 <- filter(WGpeaks_NConly, fst_SB == fst_PL, fst_SB >0, fst_PL>0)
-WGdf_filtered3 <- filter(WGpeaks_NConly, fst_LB == fst_PL, fst_LB >0, fst_PL>0)
+#Identify the highest fst value out of the three morphs
+    WGpeaks_NConly$highest <- pmax(WGpeaks_NConly$fst_LB,WGpeaks_NConly$fst_SB,WGpeaks_NConly$fst_PL)
 
-############# Just doing some counting for barplots 26/02/24
-sum(WGpeaks_NConly$fst_SB > 0.2) # 2971
-sum(WGpeaks_NConly$fst_LB > 0.2) # 2769
-sum(WGpeaks_NConly$fst_PL > 0.2) # 3432
-
-sum(WGpeaks_NConly$fst_SB > 0.5) # 19
-sum(WGpeaks_NConly$fst_LB > 0.5) # 46
-sum(WGpeaks_NConly$fst_PL > 0.5) # 40
-
-
-#Now doing some barplots
-test <- read.csv("/Users/sebma/Desktop/thirdpaperfigures/tables/numberSNPs_aboveThreshold.csv", sep=",")
-library(ggplot2)
-color <- c("#00BA38FF","#619CFFFF","#F8766DFF")
-names(color) <- c("LB","SB","PL")
-
-
-#Use labs(x= "", y = "Relative expression") for ARL16
-#And labs(x = "Developmental stage (ts)", y = "") for Rhoguanin
-  graphddRAD <- ggplot(test, aes(x=test$Threshold, y=test$Number.ddSNPs, fill=test$Morph)) + 
-    geom_bar(stat="identity", position = position_dodge()) +
-    labs(title="ddRAD",x="Threshold",y="Number of SNPs passing threshold", fill="Morph") +
-    theme_bw() + theme(plot.title = element_text(hjust=0.5)) + scale_fill_manual(values=color)
-
-  graphddRAD
-  
-  graphWG <- ggplot(test, aes(x=test$Threshold, y=test$Number.WG.SNP, fill=test$Morph)) + 
-    geom_bar(stat="identity", position = position_dodge()) +
-    labs(title="WG",x="Threshold",y="Number of windows passing threshold", fill="Morph") +
-    theme_bw() + theme(plot.title = element_text(hjust=0.5)) + scale_fill_manual(values=color)
-  graphWG
-  
-########################
-
-#Need to find SNPs which are lying outside 2sigmas of the distribution.
-WGpeaks_NConly$highest <- pmax(WGpeaks_NConly$fst_LB,WGpeaks_NConly$fst_SB,WGpeaks_NConly$fst_PL)
-maxWG <- mean(WGpeaks_NConly$highest) + 2*sd(WGpeaks_NConly$highest) # max = 0.1989775727
+#Identify what two sigmas of the distribution represents
+#This will be used to put the threshold on the plot
+    maxWG <- mean(WGpeaks_NConly$highest) + 2*sd(WGpeaks_NConly$highest) # max = 0.1989775727
 
 #Separate table per morph, then rbind it.
-WG_SB <- data.frame(WGpeaks_NConly[,c(1:2,4)])
-WG_LB <- data.frame(WGpeaks_NConly[,c(1:3)])
-WG_PL <- data.frame(WGpeaks_NConly[,c(1:2,5)])
+    WG_SB <- data.frame(WGpeaks_NConly[,c(1:2,4)])
+    WG_LB <- data.frame(WGpeaks_NConly[,c(1:3)])
+    WG_PL <- data.frame(WGpeaks_NConly[,c(1:2,5)])
 
 #Prepare colname for rbind
-colnames(WG_SB)[3] <- "Fst"
-colnames(WG_LB)[3] <- "Fst"
-colnames(WG_PL)[3] <- "Fst"
+    colnames(WG_SB)[3] <- "Fst"
+    colnames(WG_LB)[3] <- "Fst"
+    colnames(WG_PL)[3] <- "Fst"
 
 #Add the name of the morph to prepare for the color
-WG_SB$Comparison <- "SB vs LB/PL"
-WG_LB$Comparison <- "LB vs SB/PL"
-WG_PL$Comparison <- "PL vs SB/LB"
+    WG_SB$Comparison <- "SB vs LB/PL"
+    WG_LB$Comparison <- "LB vs SB/PL"
+    WG_PL$Comparison <- "PL vs SB/LB"
 
 #Bind everything together
-WG_cleanTable <- rbind(WG_SB,WG_LB,WG_PL)
+    WG_cleanTable <- rbind(WG_SB,WG_LB,WG_PL)
 
 #If Fst less than max, change the Color to "Non-significant"
-WG_cleanTable$Comparison <- ifelse(WG_cleanTable$Fst < maxWG, "Non-significant",WG_cleanTable$Comparison)
+    WG_cleanTable$Comparison <- ifelse(WG_cleanTable$Fst < maxWG, "Non-significant",WG_cleanTable$Comparison)
 #Relevel so I have non-significant at the end
-WG_cleanTable$Comparison <- factor(WG_cleanTable$Comparison)
-WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"Non-significant")
-WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"PL vs SB/LB")
-WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"SB vs LB/PL")
-WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"LB vs SB/PL")
+    WG_cleanTable$Comparison <- factor(WG_cleanTable$Comparison)
+    WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"Non-significant")
+    WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"PL vs SB/LB")
+    WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"SB vs LB/PL")
+    WG_cleanTable$Comparison <- relevel(WG_cleanTable$Comparison,"LB vs SB/PL")
 
 #Change colnames so it's the same as for RAD
-colnames(WG_cleanTable)[1] <- "NCBI"
+    colnames(WG_cleanTable)[1] <- "NCBI"
 
-#I need to calculate the absolute Position of each dot. Because here it is just the basic position.
-mergeData <- function(datatable){
-  datatable$LG <- ACchrom_noNW_nomit$LG[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
-  datatable$START <- ACchrom_noNW_nomit$START[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
-  datatable$ABPOS <- datatable$START + datatable$POS
-  return(datatable)
-}
+#At the moment, we only have the position for a window relative to the scaffold it is in
+#Need to calculate the position on the graph based on which scaffold the window is in
+    mergeData <- function(datatable){
+      datatable$LG <- ACchrom_noNW_nomit$LG[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
+      datatable$START <- ACchrom_noNW_nomit$START[match(datatable$NCBI,ACchrom_noNW_nomit$NCBI)]
+      datatable$ABPOS <- datatable$START + datatable$POS
+      return(datatable)
+    }
 
-WG_cleanTable2 <- mergeData(WG_cleanTable)
+    WG_cleanTable2 <- mergeData(WG_cleanTable)
 
-#Now I have all columns of interest: NCBI, POS, Fst and Color, with Fst and POS numeric.
-#Let's try to plot.
+############################ PLOT WGseq DATA ###############################
+#Now we have all information necessary for plotting
+    #Setup the color scheme:
+        #Old colour scheme:
+            #color <- c("#00BA38FF","#619CFFFF","#F8766DFF","black")
+        #New colour scheme:
+            color <- c("#74add1","#313695","#a50026","black")
+        names(color) <- c("LB vs SB/PL","SB vs LB/PL","PL vs SB/LB","Non-significant")
 
-color <- c("#00BA38FF","#619CFFFF","#F8766DFF","black")
-names(color) <- c("LB vs SB/PL","SB vs LB/PL","PL vs SB/LB","Non-significant")
+    #Function built by Lea for nice plotting
+        LGplot_WG <- ggplot()+ 
+          geom_rect(aes(NULL,NULL,xmin=starting,xmax=ending,fill=chromosome_info$pattern),
+                    ymin=-Inf,ymax=Inf,data=chromosome_info) +
+          scale_fill_manual(values = alpha(c("white","gray76"), .5)) +
+          scale_x_continuous(label=chromosome_info$LG, breaks = chromosome_info$MIDDLE) +
+          theme_classic()+ xlab("Linkage group") + ylab("Fst") + ggtitle("Positions of WGseq 'SNPs' on charr genome") +
+          theme(axis.text.x = element_text(angle = 90, size = 8, face = "bold", vjust = 0.5),
+                axis.title.x = element_text(size=16,
+                                            margin = margin(t=15,r=0,b=10,l=0)),
+                axis.title.y = element_text(size=16,
+                                            margin = margin(t=0,r=10,b=0,l=10)),
+                panel.border = element_rect(colour = "black",fill = "NA", size = 1),
+                legend.background = element_blank(),
+                legend.title = element_text(size = 12),
+                legend.text = element_text(size = 12),
+                legend.box.background = element_rect(color = "black")) +
+          geom_point(aes(x=WG_cleanTable2$ABPOS, y=WG_cleanTable2$Fst, color=WG_cleanTable2$Comparison), size=1) +
+          ylim(0,(max(WG_cleanTable2$Fst)+0.01))  + scale_colour_manual(values = color,name="Comparison") +
+          guides(fill=FALSE) + theme(plot.title = element_text(hjust = 0.5))#+ geom_hline(yintercept=max)
 
-LGplot_WG <- ggplot()+ 
-  geom_rect(aes(NULL,NULL,xmin=starting,xmax=ending,fill=chromosome_info$pattern),
-            ymin=-Inf,ymax=Inf,data=chromosome_info) +
-  scale_fill_manual(values = alpha(c("white","gray76"), .5)) +
-  scale_x_continuous(label=chromosome_info$LG, breaks = chromosome_info$MIDDLE) +
-  theme_classic()+ xlab("Linkage group") + ylab("Fst") + ggtitle("Positions of WGseq 'SNPs' on charr genome") +
-  theme(axis.text.x = element_text(angle = 90, size = 8, face = "bold", vjust = 0.5),
-        axis.title.x = element_text(size=16,
-                                    margin = margin(t=15,r=0,b=10,l=0)),
-        axis.title.y = element_text(size=16,
-                                    margin = margin(t=0,r=10,b=0,l=10)),
-        panel.border = element_rect(colour = "black",fill = "NA", size = 1),
-        legend.background = element_blank(),
-        legend.title = element_text(size = 12),
-        legend.text = element_text(size = 12),
-        legend.box.background = element_rect(color = "black")) +
-  geom_point(aes(x=WG_cleanTable2$ABPOS, y=WG_cleanTable2$Fst, color=WG_cleanTable2$Comparison), size=1) +
-  ylim(0,(max(WG_cleanTable2$Fst)+0.01))  + scale_colour_manual(values = color,name="Comparison") +
-  guides(fill=FALSE) + theme(plot.title = element_text(hjust = 0.5))#+ geom_hline(yintercept=max)
+    #Display plot
+        LGplot_WG
 
+    #Save as very long pdf that is easily readable. 
+    #Obviously, the WGseq Manhattan is very crowded because we have dots every 50kb on the whole genome.
+        pdf("~/Manhattan_WGseq_2sigmas_newpalette_180923.pdf", 20,10)
+        LGplot_WG
+        dev.off()
 
-LGplot_WG
-
-
-#Save as very long pdf that is easily readable. Obviously, the WGseq Manhattan is very crowded because we have dots
-#Every 50kb on the whole genome.
-pdf("/Users/sebma/Desktop/Manhattan_WGseq_2sigmas_201023.pdf", 20,10)
-LGplot_WG
-dev.off()
-
-
-### OLD STUFF ###
-######## Just doing some counting for barplots 26/02/24
-sum(newRADlist_NConly$SB > 0.2) # 723
