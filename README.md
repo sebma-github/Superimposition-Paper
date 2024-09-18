@@ -1,5 +1,5 @@
-This repository is where I have set up all codes used to:
+This repository is where I have set up all "raw" data as well as codes used to:
 - Convert datasets to the GRanges format (IN PROCESS)
 - Perform overlap enrichment analyses with these GRanges objects (DONE)
-- Make Manhattan plots for WDS and ddRAD (NOT IMPLEMENTED YET)
+- Make Manhattan plots for WGS and ddRAD (DONE)
 
