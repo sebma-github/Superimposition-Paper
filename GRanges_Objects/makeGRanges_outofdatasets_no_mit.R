@@ -5,7 +5,12 @@ library(dplyr)
 library(GenomicRanges) #For makeGRangesFromDataFrame()
 library(ggplot2)
 
-#Note: All GRanges objects generated with this script can already be found at "Superimposition-Paper/GRanges_Objects/"
+#Notes: 
+#All GRanges objects generated with this script can already be found at "Superimposition-Paper/GRanges_Objects/"
+#All raw files can be found at "Superimposition-Paper/Raw_Data"
+#Sometimes, I go back to "NC_" and "NW_" notations for the scaffolds, but this is temporary, to help me filter placed and unplaced scaffolds
+#Eventually, in order to make the GRanges objects, I need to have the scaffolds written as "chr" and not "NC_" or "NW_".
+#So I always go back to this notation, or use this notation before running the makeGRfunction()
 
 ############### LOAD INFO FOR EACH LINKAGE GROUP (SIZE, NAME, ETC...) ###################
    ACchrom <- read.csv("~/AC_chr_lengths.csv")
