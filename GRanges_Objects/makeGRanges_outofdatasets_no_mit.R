@@ -5,22 +5,21 @@ library(dplyr)
 library(GenomicRanges) #For makeGRangesFromDataFrame()
 library(ggplot2)
 
-##SCRIPT NOT CLEANED YET
+#Note: All GRanges objects generated with this script can already be found at "Superimposition-Paper/GRanges_Objects/"
 
-#Make the seqinfo (i.e. the name of each scaffold and their lengths)
-    #Load the table made/extracted by Lea
-    ACchrom <- read.csv("/Users/sebma/Desktop/GRanges_Objects/AC_chr_lengths.csv")
-    #Only keep info for the placed scaffolds (NOTE: NC_000861.1 is the mitochondrial genome)
+############### LOAD INFO FOR EACH LINKAGE GROUP (SIZE, NAME, ETC...) ###################
+   ACchrom <- read.csv("~/AC_chr_lengths.csv")
+#Remove unplaced scaffolds
     ACchrom_noNW <- ACchrom %>% filter(grepl('NC_', NCBI))
-    #Remove mitochondrial scaffold
+#Remove mitochondrial scaffold
     ACchrom_noNW_nomit <- ACchrom_noNW %>% filter(!grepl('NC_000861.1', NCBI))
-    #change NC_ into chr
+#change "NC_" into "chr"
     ACchrom_noNW_nomit$chrom <- gsub("NC_","chr",ACchrom_noNW_nomit$NCBI)
-    #Make the Seqinfo object
+#Make the Seqinfo object, which will be used as reference when making GRanges objects
     charrgenomeseqinfo <- Seqinfo(seqnames = ACchrom_noNW_nomit$chrom, seqlengths = ACchrom_noNW_nomit$Length, genome = "canada_charr")
 
-    
-#Make the function that I can use so I don't have to always update it:
+############### MAKE REUSABLE FUNCTION TO CONVERT DATAFRAMES TO GRANGE ##################
+
     makeGRfunction <- function(dfname) {
       
      newdfGR <- makeGRangesFromDataFrame(dfname,
@@ -36,45 +35,45 @@ library(ggplot2)
                                strand.field="strand",
                                starts.in.df.are.0based=FALSE)
       
-      return(newdfGR)
-      
+      return(newdfGR)  
     }
-    
-    
-####################### REFERENCE GENOME
-#Make the whole genome as a Granges object (needed for RegioneR to work) 
-    #actually not sure if needed if we do the resample regions but will generate the data anyways
+      
+##################### CONVERT THE WHOLE GENOME INTO GRANGE OBJECT #############
+#ATH, this is only useful if you DO NOT want to use the resampleRegion() function
+#In my opinion, you can discard this, as I believe the resampleRegion() method is way more accurate
     genomedf <- data.frame("chrom"=ACchrom_noNW_nomit$chrom, "start"=1,"end"=ACchrom_noNW_nomit$Length)
- 
     genome_charr_nomit_GR <- makeGRfunction(genomedf)
-        # saveRDS(genome_charr_nomit_GR, "/Users/sebma/Desktop/GRanges_Objects/genome_noNW_nomit_GR.rds")
+        #saveRDS(genome_charr_nomit_GR, "~/")
     
-    
-    
-################################## METH Here, I want to combine signif morph with signif morph*time and morph*sex
+##################### CONVERT METHYLATION DATA INTO GRANGE OBJECT #############
 #Load methylation data
-    #the ones that are signif by morph with glm (181)
+#Note: I want to combine signif CpG by morph with signif CpG by morph*time and morph*sex
+    #CpGs signif by morph with glm (181)
         signifMorph <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_Morphs_noNC_nomit.csv")
         
-    #The ones that are signif by morph*time (27)   
+    #CpGs signif by morph*time (27)   
         signifMorphxTime <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_MorphsxTime_noNC_nomit.csv")
         
-    #The ones signif by MorphxSex (28)
+    #CpGs signif by MorphxSex (28)
         signifMorphxSex <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_MorphsxSex_noNC_nomit.csv")
         
     #Combine them, remove duplicates (left with 217)
         signifMorphall <- rbind(signifMorph,signifMorphxTime,signifMorphxSex)
         signifMorphall_nodup <- signifMorphall[!duplicated(signifMorphall[ , "Residue"]),]
 
-        #write.csv(signifMorphall_nodup, "/Users/sebma/Desktop/27samples/glm27_signif_MorphsAll_noNC_nomit.csv", row.names = FALSE)
+    #For convenience, this combination can be found in "Superimposition-Paper/Raw_Data/methylation_data/glm27_signif_MorphsAll_noNC_nomit.csv"
+        #write.csv(signifMorphall_nodup, "~/glm27_signif_MorphsAll_noNC_nomit.csv", row.names = FALSE)
         
-                  #ALREADY DONE PRIOR #Now to compare these to RAD and WG, better to have only the residues in NC_  (195 CpGs) 
-                                      #Also remove mitochondrial positions
-                                      #signifMorph_NConly_mit <- signifMorphall_nodup %>% filter(grepl('NC_', NW))
-                                      #signifMorph_NConly <- signifMorph_NConly_mit %>% filter(!grepl('NC_000861.1', NCBI))
-        
+    #At this point, it would be important to remove unplaced scaffolds and mitochondrial sequences,
+    #but this was already done prior to generating these methylation files.
         signifMorph_NConly <- signifMorphall_nodup
-        
+
+
+
+
+##SCRIPT NOT CLEANED AFTER THIS YET
+
+
         #Make a recap table with just scaffold and position
         recapsignif <- data.frame(signifMorph_NConly$NCBI,signifMorph_NConly$start)
         colnames(recapsignif) <- c("NCBI_MET","POS_MET")
