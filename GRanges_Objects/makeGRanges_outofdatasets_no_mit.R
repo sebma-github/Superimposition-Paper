@@ -46,7 +46,7 @@ library(ggplot2)
         #saveRDS(genome_charr_nomit_GR, "~/")
     
 ##################### CONVERT METHYLATION DATA INTO GRANGE OBJECT #############
-#Load methylation data
+######## Load significant methylation data by morph ########
 #Note: I want to combine signif CpG by morph with signif CpG by morph*time and morph*sex
     #CpGs signif by morph with glm (181)
         signifMorph <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_Morphs_noNC_nomit.csv")
@@ -68,40 +68,58 @@ library(ggplot2)
     #but this was already done prior to generating these methylation files.
         signifMorph_NConly <- signifMorphall_nodup
 
+    #Make a recap table with just scaffold and position
+          recapsignif <- data.frame(signifMorph_NConly$NCBI,signifMorph_NConly$start)
+          colnames(recapsignif) <- c("NCBI_MET","POS_MET")
+          recapsignif$ID_MET <- paste(recapsignif$NCBI_MET,recapsignif$POS_MET,sep="_")
+
+   #Convert this methylation data to GRanges
+   #Need to turn NC back in chr, make start and end
+    #First the signif CpGs on NC_ only
+        recapsignif$chrom <- gsub("NC_","chr",recapsignif$NCBI_MET)
+        recapsignif$start <- recapsignif$POS_MET        
+        recapsignif$end <- recapsignif$start+1
+
+        recapsignifGR <- makeGRfunction(recapsignif)
+           #saveRDS(recapsignifGR, "~/glm27_signifmorphall_noNW_nomit_GR.rds")
 
 
-
-##SCRIPT NOT CLEANED AFTER THIS YET
-
-
-        #Make a recap table with just scaffold and position
-        recapsignif <- data.frame(signifMorph_NConly$NCBI,signifMorph_NConly$start)
-        colnames(recapsignif) <- c("NCBI_MET","POS_MET")
-        recapsignif$ID_MET <- paste(recapsignif$NCBI_MET,recapsignif$POS_MET,sep="_")
-    
-    #Or the full table    
-        #load the full list of 14427 residues
-        allCpG <- read.table("/Users/sebma/Desktop/27samples/methmin1_27_noPIno100.csv", header=TRUE, sep=",")
+######## Load all CpGs in RRBS (27 samples) ########
+    #load the full list of 14427 residues
+        allCpG <- read.table("~/methmin1_27_noPIno100.csv", header=TRUE, sep=",")
         allCpG_POS <- allCpG[,c(1,2)]
         
-        #Format the chr into NC/NW
+   #Format the chr into NC/NW, in order to be able to remove unplaced scaffolds
         allCpG_POS$temp <- gsub("chr","",allCpG_POS$chr)
         allCpG_POS$NW <- ifelse(nchar(allCpG_POS$temp)==11, "NW_", "NC_")
+
+
+
+#### WHAT IS THIS NAME: NCBI_nonmet????
+
+
+
         allCpG_POS$NCBI_nonmet <- paste(allCpG_POS$NW,allCpG_POS$temp, sep="")
         allCpG_POS$ID1 <- paste(allCpG_POS$NCBI_nonmet,allCpG_POS$start,sep="_")
-        #Only keep the residues in NC_ and not mit (9599 CpGs)
+   #Only keep the residues in NC_ and remove mitochondrial (9599 CpGs left)
         allCpG_POS_NConlymit <- allCpG_POS %>% filter(grepl('NC_', NW))
         allCpG_POS_NConly <- allCpG_POS_NConlymit %>% filter(!grepl('NC_000861.1', NCBI_nonmet))
-
-        
-        #The start and chrom are already there. Just need to make the end column
+     
+   #The start and chrom are already there. Just need to make the end column
         colnames(allCpG_POS_NConly)[1] <- "chrom"
         allCpG_POS_NConly$end <- allCpG_POS_NConly$start+1
-        
+
+   #Convert the whole RRBS data into GRanges (will be used as universe for permutation with methylation data)
         allCpG_POS_NConlyGR <- makeGRfunction(allCpG_POS_NConly)
-        # saveRDS(allCpG_POS_NConlyGR, "/Users/sebma/Desktop/GRanges_Objects/glm27_allPos_noNW_nomit_GR.rds")
+        #saveRDS(allCpG_POS_NConlyGR, "~/glm27_allPos_noNW_nomit_GR.rds")
         
-        
+
+
+
+
+
+
+
         
     #OR the ones that are "non-signif". 
         #For that, load the full list of 14427 residues
