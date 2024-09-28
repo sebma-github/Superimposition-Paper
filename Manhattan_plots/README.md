@@ -7,3 +7,5 @@ You will need:
 **Superimposition-Paper/Raw_Data/vcftools_output_merged.tsv** to have the RADseq info
 
 **Superimposition-Paper/Raw_Data/fst_window_WG.tsv** to have the WGS info
+
+You can make zoomed in Manhattan plots of the WGS and RADseq data with *makeManhattan_thirdpaper_zoominonRegions.R*
