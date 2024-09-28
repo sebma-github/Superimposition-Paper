@@ -123,6 +123,17 @@ library(ggplot2)
         dev.off()
 
 
+########################## LOAD WGseq DATA #################################
+
+
+
+
+
+
+
+
+
+
 ##############################
         #For WGseq
         WGpeaks <- read.table("/Users/sebma/Desktop/RAD_WG_Meth/fst_window_WG.tsv", sep=",", header = TRUE)
