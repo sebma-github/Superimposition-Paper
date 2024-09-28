@@ -1,127 +1,127 @@
-#### PACKAGES ####
-#The plan is to make a Manhattan plot that shows the significant SNPs/regions
-#For both RADseq and WGseq
-#But this time, only about 1MB around the top 5
 library(dplyr)
 library(sqldf)
 library(ggplot2)
 
-#Identify the top 5 highest SNPs first:
+#Aim: make Manhattan plots that shows what happens around the top significant SNPs/regions
 
-        #For RADseq
-          newRADlist <- read.csv("/Users/sebma/Desktop/SNP_SLH-main/SNP_SLH-main/methylation/vcftools_output_merged.tsv", sep="\t")
-          #Keep only NC_ and no mit
-          newRADlist_NConlymit <- newRADlist %>% filter(grepl('NC_', NCBI)) #8480 SNPs
-          newRADlist_NConly <- newRADlist_NConlymit %>% filter(!grepl('NC_000861.1', NCBI))
-          newRADlist_NConly$highest <- pmax(newRADlist_NConly$SB,newRADlist_NConly$LB,newRADlist_NConly$PL)
-          #Only keep the 5 highest rows
-          highestSNPs <- newRADlist_NConly %>% arrange(desc(highest)) %>% slice(1:5)                                     # Top N highest values by group
-          #This works, but you can see that 3 of the 5 highest SNPs are in the same region
-          #Keep the highest SNPs until we get the top 5 regions
-          highestSNPs <- newRADlist_NConly %>% arrange(desc(highest)) %>% slice(1:10)
-          highestSNPstop5regions <- highestSNPs[c(1,3,4,6,10),]
-          #That will give me the position of the 5 regions I want to look at
-          #They asked me to look at this on a 1MB basis
-          highestSNPstop5regions$NCBIHighest <- highestSNPstop5regions$NCBI
+########################## LOAD RADseq DATA #################################
+        newRADlist <- read.csv("~/vcftools_output_merged.tsv", sep="\t")
+#Keep only NC_ (placed scaffolds)
+        newRADlist_NConlymit <- newRADlist %>% filter(grepl('NC_', NCBI)) #8480 SNPs
+#Remove mitochondrial scaffold
+        newRADlist_NConly <- newRADlist_NConlymit %>% filter(!grepl('NC_000861.1', NCBI))
+#Identify the highest fst value out of the three morphs
+        newRADlist_NConly$highest <- pmax(newRADlist_NConly$SB,newRADlist_NConly$LB,newRADlist_NConly$PL)
+
+#Only keep the top n highest Fst SNPs (for instance n=10):
+        highestSNPs <- newRADlist_NConly %>% arrange(desc(highest)) %>% slice(1:10)
+#Here, out fo the 10 SNPs, only 5 are in different regions, so keep these five to avoid redundancy (optional)
+        highestSNPstop5regions <- highestSNPs[c(1,3,4,6,10),]
+#Alternatively, find out the SNPs of interest to you through any way you'd like but keep them in this format
+
+#Rename the scaffold column with a different name so it doesn't confuse the sqldf() function down the line
+        colnames(highestSNPstop5regions)[1] <- "NCBIHighest"
+#Establish the start and end of the window of interest:
+#For instance, if you want to plot a 1Mb region:
           highestSNPstop5regions$startWindow <- highestSNPstop5regions$POS - 500000
           highestSNPstop5regions$endWindow <- highestSNPstop5regions$POS + 500000
-          #Remove all columns that have the same name
-          highestSNPstop5regionsCLEAN <- highestSNPstop5regions[,c(8:10)]
-          #Now that I have the coordinates, I need to keep all positions in these regions
+#Only keep columns with: name of scaffold, start of window and end of window
+          highestSNPstop5regionsCLEAN <- highestSNPstop5regions[,c(1,8:9)]
+
+#Use sqldf to mine data regarding the SNPs that fall in these regions
           All5Regions <- sqldf('SELECT NCBI, POS, ID, SB, LB, PL, highest
                          FROM newRADlist_NConly, highestSNPstop5regionsCLEAN
                          WHERE NCBI = NCBIHighest AND POS > startWindow AND POS < endWindow')
-          #Put the name of Morph for colouring
-          #Separate table per morph, then rbind it.
+
+#Separate table per morph, then rbind it.
           RAD_SB <- data.frame(All5Regions[,c(1:4)])
           RAD_LB <- data.frame(All5Regions[,c(1:3,5)])
           RAD_PL <- data.frame(All5Regions[,c(1:3,6)])
-          
-          #Prepare colname for rbind
+#Prepare colname for rbind
           colnames(RAD_SB)[4] <- "Fst"
           colnames(RAD_LB)[4] <- "Fst"
           colnames(RAD_PL)[4] <- "Fst"
-          
-          #Add the name of the morph to prepare for the color
+#Add the name of the morph to prepare for the color
           RAD_SB$Comparison <- "SB vs LB/PL"
           RAD_LB$Comparison <- "LB vs SB/PL"
           RAD_PL$Comparison <- "PL vs SB/LB"
-          #Bind everything together
+#Bind everything together
           RAD_cleanTable <- rbind(RAD_SB,RAD_LB,RAD_PL)
-          #If Fst less than 2sigma threshold (0.41497) for RADseq, change the Color by "Non-significant"
+          
+#If Fst less than 2sigma threshold (0.41497) for RADseq, change the Color to "Non-significant"
           RAD_cleanTable$Comparison <- ifelse(RAD_cleanTable$Fst < 0.41497, "Non-significant",RAD_cleanTable$Comparison)
-          #Relevel so I have non-significant at the end
+#Relevel so I have non-significant at the end
           RAD_cleanTable$Comparison <- factor(RAD_cleanTable$Comparison)
           RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"Non-significant")
           RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"PL vs SB/LB")
           RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"SB vs LB/PL")
           RAD_cleanTable$Comparison <- relevel(RAD_cleanTable$Comparison,"LB vs SB/PL")
           
-          #Separate it in regions:
+#Separate it in regions:
+#ATH: If you decide to plot regions that are on the same scaffold, you will need to find other ways to filter the data
           Region1 <- RAD_cleanTable %>% filter(grepl('NC_036875.1', NCBI))
           Region2 <- RAD_cleanTable %>% filter(grepl('NC_036850.1', NCBI))
           Region3 <- RAD_cleanTable %>% filter(grepl('NC_036841.1', NCBI))
           Region4 <- RAD_cleanTable %>% filter(grepl('NC_036859.1', NCBI))
           Region5 <- RAD_cleanTable %>% filter(grepl('NC_036843.1', NCBI))
           
-          #Now for the plotting
-          #I don't need to calculate the absolute position because only 1 LG per graph
-          color <- c("#00BA38FF","#619CFFFF","#F8766DFF","black")
-          names(color) <- c("LB vs SB/PL","SB vs LB/PL","PL vs SB/LB","Non-significant")
-          
-          graphFct <- function(datatable,LG,startwindow,endwindow,title) {
+#Now for the plotting
+#I don't need to calculate the absolute position because only 1 LG per graph
+        #Old color scheme          
+                #color <- c("#00BA38FF","#619CFFFF","#F8766DFF","black")
+        #New colour scheme:
+                color <- c("#74add1","#313695","#a50026","black")
+                names(color) <- c("LB vs SB/PL","SB vs LB/PL","PL vs SB/LB","Non-significant")
+
+#Plotting function
+#This finds the position of the highest SNP (the middle of the window) and uses it to calculate the xlims
+        graphFct <- function(datatable,LG,title) {
+            row_with_highest_Fst_SNP <- datatable %>% filter(Fst == max(Fst))
+            xlim1 <- row_with_highest_Fst_SNP$POS - 500000
+            xlim2 <- row_with_highest_Fst_SNP$POS + 500000
             ggplot()+ theme_classic()+ xlab(LG) + ylab("Fst") + ggtitle(title) +
-            geom_point(aes(x=datatable$POS, y=datatable$Fst, color=datatable$Comparison), size=1) + 
-            theme(axis.text.x = element_text(angle = 0, size = 8, vjust=0.6)) + xlim(startwindow,endwindow) +
-            ylim(0,0.9) + scale_colour_manual(values = color,name="Comparison") + theme(plot.title = element_text(hjust = 0.5))
+              geom_point(aes(x=datatable$POS, y=datatable$Fst, color=datatable$Comparison), size=1) + 
+              theme(axis.text.x = element_text(angle = 0, size = 8, vjust=0.6)) + xlim(xlim1,xlim2) +
+              ylim(0,0.9) + scale_colour_manual(values = color,name="Comparison") + theme(plot.title = element_text(hjust = 0.5))
           }
           
-          graph1 <- graphFct(Region1,"NC_036875.1",29708000,30708000,"Region1")
-          graph2 <- graphFct(Region2,"NC_036850.1",20926835,21926835,"Region2")
-          graph3 <- graphFct(Region3,"NC_036841.1",9230820,10230820,"Region3")
-          graph4 <- graphFct(Region4,"NC_036859.1",30994438,31994438,"Region4")
-          graph5 <- graphFct(Region5,"NC_036843.1",21567680,22567680,"Region5")
+          graph1 <- graphFct(Region1,"NC_036875.1","Region1")
+          graph2 <- graphFct(Region2,"NC_036850.1","Region2")
+          graph3 <- graphFct(Region3,"NC_036841.1","Region3")
+          graph4 <- graphFct(Region4,"NC_036859.1","Region4")
+          graph5 <- graphFct(Region5,"NC_036843.1","Region5")
           
           graph1
           graph2
           graph3
           graph4
           graph5
-          
-          #For Region1 and Region2, need to make a graph with a smaller window:
-          #For Region 1: 100bp is enough
-            graph1bis <- ggplot()+ theme_classic()+ xlab("NC_036875.1") + ylab("Fst") + ggtitle("Region 1 zoomed in") +
-            geom_point(aes(x=Region1$POS, y=Region1$Fst, color=Region1$Comparison), size=1) + xlim(30207950,30208050) +
-            ylim(0,0.9) + theme(axis.text.x = element_text(angle = 0, size = 8, vjust=0.6)) + 
-            scale_colour_manual(values = color,name="Comparison") + theme(plot.title = element_text(hjust = 0.5))
-          graph1bis
-          
-          graph2bis <- ggplot()+ theme_classic()+ xlab("NC_036850.1") + ylab("Fst") + ggtitle("Region 2 zoomed in") +
-            geom_point(aes(x=Region2$POS, y=Region2$Fst, color=Region2$Comparison), size=1) + xlim(21426785,21426885) +
-            ylim(0,0.9) + theme(axis.text.x = element_text(angle = 0, size = 8, vjust=0.6)) +
-            scale_colour_manual(values = color,name="Comparison") + theme(plot.title = element_text(hjust = 0.5))
-          graph2bis
-          #For Region1 and Region2, need to make a graph with a smaller window: lets say 50kb before and 50kb after
-          
-          #ATH: ISSUE WITH THE ddRAD SNPs: Some SNPs only have values for 2 morphs: Thus impossible to know which morph separates
-          #Check how many for each pair of morphs:
-          LBSB <- filter(newRADlist_NConly, LB == SB, LB >0, SB>0)
-          LBPL <- filter(newRADlist_NConly, LB == PL, LB >0, PL>0)
-          SBPL <- filter(newRADlist_NConly, SB == PL, SB >0, PL>0)
-          
-pdf("/Users/sebma/Desktop/Top5Regions.pdf", 5,5)
-          graph1          
-          graph1bis
-          graph2
-          graph2bis
-          graph3
-          graph4
-          graph5
-          dev.off()
 
-pdf("/Users/sebma/Desktop/Region2_zoomedin.pdf", 5,5)   
-graph2bis
-dev.off()
+#As you can see, there are multiple peaks in region1, so you can change the function to have a smaller window around the highest SNP:
+#For instance, only a 100bp window
+        graphFct_100bp <- function(datatable,LG,title) {
+                    row_with_highest_Fst_SNP <- datatable %>% filter(Fst == max(Fst))
+                    xlim1 <- row_with_highest_Fst_SNP$POS - 50
+                    xlim2 <- row_with_highest_Fst_SNP$POS + 50
+                    ggplot()+ theme_classic()+ xlab(LG) + ylab("Fst") + ggtitle(title) +
+                      geom_point(aes(x=datatable$POS, y=datatable$Fst, color=datatable$Comparison), size=1) + 
+                      theme(axis.text.x = element_text(angle = 0, size = 8, vjust=0.6)) + xlim(xlim1,xlim2) +
+                      ylim(0,0.9) + scale_colour_manual(values = color,name="Comparison") + theme(plot.title = element_text(hjust = 0.5))
+                  }
+        graph1_bis <- graphFct_100bp(Region1,"NC_036875.1","Region1")
+
+#Or you could also specify the xlim() directly if it is a one time thing or if the size that makes the most sense changes all the time 
+       
+#Save your plots in .pdf if needed
+        pdf("/Users/sebma/Desktop/Top5Regions.pdf", 5,5)
+                  graph1          
+                  graph1bis
+                  graph2
+                  graph3
+                  graph4
+                  graph5
+        dev.off()
+
 
 ##############################
         #For WGseq
