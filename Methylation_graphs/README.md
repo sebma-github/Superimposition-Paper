@@ -1,6 +1,6 @@
 Use the *averagemethylationgraphs_CpGs_of_interest.R* script with the "raw" methylation data (**Superimposition-Paper/Raw_Data/methylation_data/methmin1_27_noPIno100.csv**) to make methylation graphs of CpGs of interest.
 
-Note: The end of the script was quite hard-coded with the specific examples Iwas using. 
+Note: The end of the script was quite hard-coded with the specific examples I was using. 
 You will need to adapt it to your CpGs of interest or find a way to automate it.
 
 
