@@ -5,7 +5,7 @@ library(ggplot2)
 
 ############################### LOAD DATA #################################
 #Load the methylation data:
-meth.min1df <- read.table("/Users/sebma/Desktop/27samples/methmin1_27_noPIno100.csv", sep=",", header=TRUE)
+meth.min1df <- read.table("~/methmin1_27_noPIno100.csv", sep=",", header=TRUE)
 
   ##Use the annotations to create an ID we will use later
     annotation <- meth.min1df[,c(1,2,3,4)]
@@ -32,7 +32,7 @@ meth.min1df <- read.table("/Users/sebma/Desktop/27samples/methmin1_27_noPIno100.
 #Now, which CpGs you are interested in?
     #For instance, are you interested in CpGs because of their position around SNPs?
     #Here is an example of CpGs in a 30k peak around RAD SNPs with an Fst > 0.2:
-    interestPOS <- read.csv("/Users/sebma/Desktop/27samples/Position_CpGvsRADSNP_0p2_peak30k.csv")
+    interestPOS <- read.csv("~/Position_CpGvsRADSNP_0p2_peak30k.csv")
         #Again, this is just an example, I encourage you to make your own list of CpGs that are of
         #interest to you. Either with other scripts by comparing with other datasets,
         #Or you could also just note the position of regions of genetic divergence and manually make
@@ -54,7 +54,7 @@ meth.min1df <- read.table("/Users/sebma/Desktop/27samples/methmin1_27_noPIno100.
     totalt <- as.data.frame(t(CpGofInterest))
 
     #Add a column for morph and timepoint.
-    #Sample names and order can be found at "/Users/sebma/Desktop/27samples/samplerecapdf_samplenames_27.csv"
+    #Sample names and order can be found at "~/samplerecapdf_samplenames_27.csv"
     #But you can also trust these vectors and reuse them (as long as you work with the 27 samples methylation data, and not the 48 samples methylation data from my first paper)
     totalt$Morph <- c("PL","PL","PL","LB","LB","LB","SB","SB","SB",
                   "PL","PL","LB","LB","SB","PL","SB","SB","LB",
