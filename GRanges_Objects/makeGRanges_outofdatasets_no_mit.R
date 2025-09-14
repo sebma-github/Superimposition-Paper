@@ -316,7 +316,7 @@ library(ggplot2)
         WGpeaks_NConly$highest <- pmax(WGpeaks_NConly$fst_LB,WGpeaks_NConly$fst_SB,WGpeaks_NConly$fst_PL)
         # hist(WGpeaks_NConly$highest)
         
-        # write.csv(WGpeaks_NConly, "/Users/sebma/Desktop/thirdpaperfigures/tables/listofWGregions_NConly.csv", row.names = F)
+        # write.csv(WGpeaks_NConly, "~/listofWGregions_NConly.csv", row.names = F)
         
         #Find what two sigmas of the distribution represents.
         maxWG <- mean(WGpeaks_NConly$highest) + 2*sd(WGpeaks_NConly$highest)
@@ -330,12 +330,12 @@ library(ggplot2)
         WG_SNPs$start <- WG_SNPs$POS - 49999
         WG_SNPs$end <- WG_SNPs$POS + 50000
         
-        #write.csv(WG_SNPs, "/Users/sebma/Desktop/27samples/WGSNPs_2sigmas_NConly_nomit_100k.csv", row.names = FALSE)
+        #write.csv(WG_SNPs, "~/WGSNPs_2sigmas_NConly_nomit_100k.csv", row.names = FALSE)
         
         WGSNPs_2sigmas_NConly_nomit_100k_GR <- makeGRfunction(WG_SNPs)
         #Trim the windows out of range
         WGSNPs_2sigmas_NConly_nomit_100k_GR_trim <- trim(WGSNPs_2sigmas_NConly_nomit_100k_GR, use.names=TRUE)
-        # saveRDS(WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/WG_2sigma_NConly_nomit_100k_GR_trim.rds")
+        # saveRDS(WGSNPs_2sigmas_NConly_nomit_100k_GR_trim, "~/WG_2sigma_NConly_nomit_100k_GR_trim.rds")
        
         #Plot the distribution, just for info:
         ggplot(WGpeaks_NConly, aes(x=highest)) + geom_histogram(bins = 30) + theme_bw() + labs(x="Fst", y="Frequency", title = "Fst distribution WGseq regions") + 
@@ -354,15 +354,15 @@ library(ggplot2)
         #Make GRange objects and trim 
         WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR <- makeGRfunction(WG_SNPs_LB)
         WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim <- trim(WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR, use.names=TRUE)
-        saveRDS(WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
+        saveRDS(WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim, "~/WGSNPs_LBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
         
         WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR <- makeGRfunction(WG_SNPs_SB)
         WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim <- trim(WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR, use.names = TRUE)
-        saveRDS(WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
+        saveRDS(WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim, "~/WGSNPs_SBonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
         
         WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR <- makeGRfunction(WG_SNPs_PL)
         WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim <- trim(WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR, use.names = TRUE)
-        saveRDS(WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
+        saveRDS(WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim, "~/WGSNPs_PLonly_2sigmas_NConly_nomit_100k_GR_trim.rds")
         
 ##############        
         
@@ -380,7 +380,7 @@ library(ggplot2)
         WGSNPs_nonsignificant_outof2sigmas_NConly_nomit_100k_GR <- makeGRfunction(WG_nonSNPs)
         #Trim the windows out of range
         WGSNPs_nonsignificant_outof2sigmas_NConly_nomit_100k_GR_trim <- trim(WGSNPs_nonsignificant_outof2sigmas_NConly_nomit_100k_GR, use.names=TRUE)
-        saveRDS(WGSNPs_nonsignificant_outof2sigmas_NConly_nomit_100k_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim.rds")
+        saveRDS(WGSNPs_nonsignificant_outof2sigmas_NConly_nomit_100k_GR_trim, "~/WG_nonsignificant_outof2sigma_NConly_nomit_100k_GR_trim.rds")
         
         
      #Keep all windows on NC_
@@ -395,26 +395,22 @@ library(ggplot2)
         WGpeaks_NConly_allwindows_GR <- makeGRfunction(WGpeaks_NConly)
         #Trim the windows out of range
         WGpeaks_NConly_nomit_allwindows_GR_trim <- trim(WGpeaks_NConly_allwindows_GR, use.names=TRUE)
-        saveRDS(WGpeaks_NConly_nomit_allwindows_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/WGpeaks_NConly_nomit_allwindows_GR_trim.rds")
+        saveRDS(WGpeaks_NConly_nomit_allwindows_GR_trim, "~/WGpeaks_NConly_nomit_allwindows_GR_trim.rds")
         
         
 ########################### DE genes
-        #Use C:/Users/sebma/Desktop/Rscripts/getGeneInfo_Transc.R to get the Scaffold and position of the genes
+        #Used "~/getGeneInfo_Transc.R" to get the Scaffold and position of the genes
         
       # 1) All genes in transcriptome data
-        allgenesFullInfo <- read.csv("/Users/sebma/Desktop/Alexander stuff/allgeneswithPosition.csv")
+        allgenesFullInfo <- read.csv("~/allgeneswithPosition.csv")
         #Only keep the data on NC_
         allgenesFullInfo_NConly <- allgenesFullInfo %>% filter(grepl('NC_', chromosome_RefSeq))
         #Only keep uniq geneID (basically only keep one of the transcripts if there is more than one)
         allgenesFullInfo_NConly_uniq <- allgenesFullInfo_NConly[!duplicated(allgenesFullInfo_NConly$geneID),]
-        #Take the middle of the gene? the start?
-        #Some genes are huge..
-        #OK what about in that case I do the peak around the CpG?
-        #And I just make the GRange for the genes whatever size they are supposed to be, at least for a specific transcript.
         allgenesFullInfo_NConly_uniq$chrom <- gsub("NC_","chr",allgenesFullInfo_NConly_uniq$chromosome_RefSeq) 
         
         #allgenesFullInfo_NConly_uniq_GR <- WGpeaks_NC_Signif0p2(allgenesFullInfo_NConly_uniq)
-        #saveRDS(allgenesFullInfo_NConly_uniq_GR, "/Users/sebma/Desktop/GRanges_Objects/allgenesFullInfo_NConly_uniq_GR.rds")
+        #saveRDS(allgenesFullInfo_NConly_uniq_GR, "~/allgenesFullInfo_NConly_uniq_GR.rds")
 
       # 2) All genes but this time with a 20kb peak around them:
         allgenesFullInfo_NConly_uniq$start <- allgenesFullInfo_NConly_uniq$start - 10000
@@ -429,12 +425,11 @@ library(ggplot2)
         allgenesFullInfo_NConly_uniq_20kbpeak_GR <- makeGRfunction(allgenesFullInfo_NConly_uniq)
         #Trim.
         allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim <- trim(allgenesFullInfo_NConly_uniq_20kbpeak_GR, use.names=TRUE)
-        #saveRDS(allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim.rds")
-        
-        
-        
+        #saveRDS(allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim, "~/allgenesFullInfo_NConly_uniq_20kbpeak_GR_trim.rds")
+
+
         #3) Only DE genes
-        DEgenesFullInfo <- read.csv("/Users/sebma/Desktop/Alexander stuff/DEgeneswithPosition.csv")
+        DEgenesFullInfo <- read.csv("~/DEgeneswithPosition.csv")
         #Only keep the data on NC_
         DEgenesFullInfo_NConly <- DEgenesFullInfo %>% filter(grepl('NC_', chromosome_RefSeq))
                   #There is nothing on mitochondria so no need to remove these
@@ -445,7 +440,7 @@ library(ggplot2)
         DEgenesFullInfo_NConly_uniq$chrom <- gsub("NC_","chr",DEgenesFullInfo_NConly_uniq$chromosome_RefSeq) 
         
         #DEgenesFullInfo_NConly_uniq_GR <- makeGRfunction(DEgenesFullInfo_NConly_uniq)
-        #saveRDS(DEgenesFullInfo_NConly_uniq_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_GR.rds")
+        #saveRDS(DEgenesFullInfo_NConly_uniq_GR, "~/DEgenesFullInfo_NConly_uniq_GR.rds")
         
         
         #4) Only DE genes but this time with a 20kb peak around them:
@@ -458,13 +453,13 @@ library(ggplot2)
           }
         }
   
-        #write.csv(DEgenesFullInfo_NConly_uniq, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_20kbpeak.csv", row.names = FALSE)
+        #write.csv(DEgenesFullInfo_NConly_uniq, "~/DEgenesFullInfo_NConly_uniq_20kbpeak.csv", row.names = FALSE)
         
         DEgenesFullInfo_NConly_uniq_20kbpeak_GR <- makeGRfunction(DEgenesFullInfo_NConly_uniq)
   #No need to trim this time, as there is no warning of out of bounds
   #DEgenesFullInfo_NConly_uniq_20kbpeak_GR_trim <- trim(DEgenesFullInfo_NConly_uniq_20kbpeak_GR, use.names=TRUE)
   
-  saveRDS(DEgenesFullInfo_NConly_uniq_20kbpeak_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_20kbpeak_GR.rds")
+  saveRDS(DEgenesFullInfo_NConly_uniq_20kbpeak_GR, "~/DEgenesFullInfo_NConly_uniq_20kbpeak_GR.rds")
 
 ####################                  
   #Separate the significant dataset to make one dataset per morph.
@@ -477,32 +472,23 @@ library(ggplot2)
   
   #Make GRange objects (no need to trim here)
   DEgenesFullInfo_NConly_uniq_LBonly_20k_GR <- makeGRfunction(DEgenesFullInfo_NConly_uniq_LBonly)
-  saveRDS(DEgenesFullInfo_NConly_uniq_LBonly_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_LBonly_20k_GR.rds")
+  saveRDS(DEgenesFullInfo_NConly_uniq_LBonly_20k_GR, "~/DEgenesFullInfo_NConly_uniq_LBonly_20k_GR.rds")
   
   DEgenesFullInfo_NConly_uniq_SBonly_20k_GR <- makeGRfunction(DEgenesFullInfo_NConly_uniq_SBonly)
-  saveRDS(DEgenesFullInfo_NConly_uniq_SBonly_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_SBonly_20k_GR.rds")
+  saveRDS(DEgenesFullInfo_NConly_uniq_SBonly_20k_GR, "~/DEgenesFullInfo_NConly_uniq_SBonly_20k_GR.rds")
   
   DEgenesFullInfo_NConly_uniq_PLonly_20k_GR <- makeGRfunction(DEgenesFullInfo_NConly_uniq_PLonly)
-  saveRDS(DEgenesFullInfo_NConly_uniq_PLonly_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_PLonly_20k_GR.rds")
+  saveRDS(DEgenesFullInfo_NConly_uniq_PLonly_20k_GR, "~/DEgenesFullInfo_NConly_uniq_PLonly_20k_GR.rds")
   
 
-  
-  
-  #Then I also need to make the inverse datasets.. WAIT I DO NOT NEED TO DO THIS
-  
-  
-  ########################   
-  
-  
-    
         #5) Non significant genes, with a 20kbp around them
-            allgenesFullInfo <- read.csv("/Users/sebma/Desktop/Alexander stuff/allgeneswithPosition.csv")
+            allgenesFullInfo <- read.csv("~/allgeneswithPosition.csv")
             #Only keep the data on NC_
             allgenesFullInfo_NConly <- allgenesFullInfo %>% filter(grepl('NC_', chromosome_RefSeq))
             #Only keep uniq geneID (need to ask what is the best way of doing things.) #23627 genes
             allgenesFullInfo_NConly_uniq <- allgenesFullInfo_NConly[!duplicated(allgenesFullInfo_NConly$geneID),]
         
-            DEgenesFullInfo <- read.csv("/Users/sebma/Desktop/Alexander stuff/DEgeneswithPosition.csv")
+            DEgenesFullInfo <- read.csv("~/DEgeneswithPosition.csv")
             #Only keep the data on NC_
             DEgenesFullInfo_NConly <- DEgenesFullInfo %>% filter(grepl('NC_', chromosome_RefSeq))
             #Only keep uniq geneID (need to ask what is the best way of doing things.) #1141 genes
@@ -518,8 +504,9 @@ library(ggplot2)
             test<- allgenesFullInfo_NConly_uniq %>% filter(grepl((paste(DEgenesid,collapse="|")), geneID))
             testgeneiD <- test$geneID
             missinggenes <- DEgenesFullInfo_NConly_uniq %>% filter(!grepl((paste(testgeneiD,collapse="|")), gene_id))
+
   ###############################
-      #Remove these from the DE list (done on 26/02/24)
+      #Remove these 146 genes from the DE list (done on 26/02/24)
             DEwithoutmissinggenes <- DEgenesFullInfo_NConly_uniq %>% filter(grepl((paste(testgeneiD,collapse="|")), gene_id))
             DEwithoutmissinggenes$chrom <- gsub("NC_","chr",DEwithoutmissinggenes$chromosome_RefSeq)
             
@@ -535,7 +522,7 @@ library(ggplot2)
             DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR <- makeGRfunction(DEwithoutmissinggenes)
             #trim
             #DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR_trim <- trim(DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, use.names=TRUE)
-            saveRDS(DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR.rds")
+            saveRDS(DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR, "~/DEgenes_NConly_uniq_20kbpeak_withoutmissinggenes_GR.rds")
             
             #Separate the significant dataset to make one dataset per morph.
             DEwithoutmissinggenes_LBonly <- DEwithoutmissinggenes %>% filter(grepl('LB', direction_unique))
@@ -544,23 +531,20 @@ library(ggplot2)
             
             #Make GRange objects (no need to trim here)
             DEwithoutmissinggenes_LBonly_20k_GR <- makeGRfunction(DEwithoutmissinggenes_LBonly)
-            saveRDS(DEwithoutmissinggenes_LBonly_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_LBonly_nomissinggene_20k_GR.rds")
+            saveRDS(DEwithoutmissinggenes_LBonly_20k_GR, "~/DEgenesFullInfo_NConly_uniq_LBonly_nomissinggene_20k_GR.rds")
             
             DEwithoutmissinggenes_SBonly_20k_GR <- makeGRfunction(DEwithoutmissinggenes_SBonly)
-            saveRDS(DEwithoutmissinggenes_SBonly_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_SBonly_nomissinggene_20k_GR.rds")
+            saveRDS(DEwithoutmissinggenes_SBonly_20k_GR, "~/DEgenesFullInfo_NConly_uniq_SBonly_nomissinggene_20k_GR.rds")
             
             DEwithoutmissinggenes_PLonly_20k_GR <- makeGRfunction(DEwithoutmissinggenes_PLonly)
-            saveRDS(DEwithoutmissinggenes_PLonly_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/DEgenesFullInfo_NConly_uniq_PLonly_nomissinggene_20k_GR.rds")
+            saveRDS(DEwithoutmissinggenes_PLonly_20k_GR, "~/DEgenesFullInfo_NConly_uniq_PLonly_nomissinggene_20k_GR.rds")
             
             
             
             
   ###############################          
-            #Now I have the list of the 146 genes that are not in the whole table and I need to figure out why
-            #If I don't figure out why, I need to figure out what to do about it: Should I just remove them from the data
-            #
-            
-            
+            #Also remove these 146 genes from the non-DE list
+
             nonDEgenes$chrom <- gsub("NC_","chr",nonDEgenes$chromosome_RefSeq)
             
             nonDEgenes$start <- nonDEgenes$start - 10000
@@ -575,6 +559,7 @@ library(ggplot2)
             nonDEgenes_NConly_uniq_20kbpeak_GR <- makeGRfunction(nonDEgenes)
             #trim
             nonDEgenes_NConly_uniq_20kbpeak_GR_trim <- trim(nonDEgenes_NConly_uniq_20kbpeak_GR, use.names=TRUE)
-            saveRDS(nonDEgenes_NConly_uniq_20kbpeak_GR, "/Users/sebma/Desktop/GRanges_Objects/nonDEgenes_NConly_uniq_20kbpeak_GR_trim.rds")
+            saveRDS(nonDEgenes_NConly_uniq_20kbpeak_GR, "~/nonDEgenes_NConly_uniq_20kbpeak_GR_trim.rds")
             
+
 
