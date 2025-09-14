@@ -54,13 +54,13 @@ library(ggplot2)
 ######## Load significant methylation data by morph ########
 #Note: I want to combine signif CpG by morph with signif CpG by morph*time and morph*sex
     #CpGs signif by morph with glm (181)
-        signifMorph <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_Morphs_noNC_nomit.csv")
+        signifMorph <- read.csv("~/glm27_signif_Morphs_noNC_nomit.csv")
         
     #CpGs signif by morph*time (27)   
-        signifMorphxTime <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_MorphsxTime_noNC_nomit.csv")
+        signifMorphxTime <- read.csv("~/glm27_signif_MorphsxTime_noNC_nomit.csv")
         
     #CpGs signif by MorphxSex (28)
-        signifMorphxSex <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_MorphsxSex_noNC_nomit.csv")
+        signifMorphxSex <- read.csv("~/glm27_signif_MorphsxSex_noNC_nomit.csv")
         
     #Combine them, remove duplicates (left with 217)
         signifMorphall <- rbind(signifMorph,signifMorphxTime,signifMorphxSex)
@@ -97,15 +97,9 @@ library(ggplot2)
    #Format the chr into NC/NW, in order to be able to remove unplaced scaffolds
         allCpG_POS$temp <- gsub("chr","",allCpG_POS$chr)
         allCpG_POS$NW <- ifelse(nchar(allCpG_POS$temp)==11, "NW_", "NC_")
-
-
-
-#### WHAT IS THIS NAME: NCBI_nonmet????
-
-
-
         allCpG_POS$NCBI_nonmet <- paste(allCpG_POS$NW,allCpG_POS$temp, sep="")
         allCpG_POS$ID1 <- paste(allCpG_POS$NCBI_nonmet,allCpG_POS$start,sep="_")
+
    #Only keep the residues in NC_ and remove mitochondrial (9599 CpGs left)
         allCpG_POS_NConlymit <- allCpG_POS %>% filter(grepl('NC_', NW))
         allCpG_POS_NConly <- allCpG_POS_NConlymit %>% filter(!grepl('NC_000861.1', NCBI_nonmet))
@@ -118,17 +112,9 @@ library(ggplot2)
         allCpG_POS_NConlyGR <- makeGRfunction(allCpG_POS_NConly)
         #saveRDS(allCpG_POS_NConlyGR, "~/glm27_allPos_noNW_nomit_GR.rds")
         
-
-
-
-
-
-
-
-        
     #OR the ones that are "non-signif". 
         #For that, load the full list of 14427 residues
-        allCpG <- read.table("/Users/sebma/Desktop/27samples/methmin1_27_noPIno100.csv", header=TRUE, sep=",")
+        allCpG <- read.table("~/methmin1_27_noPIno100.csv", header=TRUE, sep=",")
         allCpG_POS <- allCpG[,c(1,2)]
         
         #Format the chr into NC/NW
@@ -155,27 +141,27 @@ library(ggplot2)
         recapsignif$end <- recapsignif$start+1
 
         recapsignifGR <- makeGRfunction(recapsignif)
-        #saveRDS(recapsignifGR, "/Users/sebma/Desktop/GRanges_Objects/glm27_signifmorphall_noNW_nomit_GR.rds")
+        #saveRDS(recapsignifGR, "~/glm27_signifmorphall_noNW_nomit_GR.rds")
     
     #Second the non-signif CpGs on NC_ only  
         colnames(nondiffmethCpG)[1] <- "chrom"
         nondiffmethCpG$end <- nondiffmethCpG$start+1
         
         nondiffmethCpG_GR <- makeGRfunction(nondiffmethCpG)
-        saveRDS(nondiffmethCpG_GR, "/Users/sebma/Desktop/GRanges_Objects/glm27_nonsignifmorphall_noNW_nomit_GR.rds")
+        saveRDS(nondiffmethCpG_GR, "~/glm27_nonsignifmorphall_noNW_nomit_GR.rds")
         
 
 
     #### NEGATIVE CONTROL: SIGNIF METHYLATION BY TIME AND TIMExSEX
         #Load methylation data
         #the ones that are signif by time with glm (545)
-        signifTime <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_Time_noNC_nomit.csv")
+        signifTime <- read.csv("~/glm27_signif_Time_noNC_nomit.csv")
         
         #The ones that are signif by morph*time (27)   #This one is called bis just because it has an extra column that allows for rbind. But data is the same
-        signifMorphxTime <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_MorphsxTime_noNC_nomit_bis.csv")
+        signifMorphxTime <- read.csv("~/glm27_signif_MorphsxTime_noNC_nomit_bis.csv")
         
         #The ones signif by time*sex (11)
-        signifTimexSex <- read.csv("/Users/sebma/Desktop/27samples/glm27_signif_TimexSex_noNC_nomit.csv")
+        signifTimexSex <- read.csv("~/glm27_signif_TimexSex_noNC_nomit.csv")
         
         #Combine them, remove duplicates (left with 569)
         signifTimeall <- rbind(signifTime,signifMorphxTime,signifTimexSex)
@@ -195,14 +181,14 @@ library(ggplot2)
         recapsignif$end <- recapsignif$start+1
         
         recapsignifGR <- makeGRfunction(recapsignif)
-        #saveRDS(recapsignifGR, "/Users/sebma/Desktop/GRanges_Objects/glm27_signiftimeall_noNW_nomit_GR.rds")
+        #saveRDS(recapsignifGR, "~/glm27_signiftimeall_noNW_nomit_GR.rds")
         
         
                 
                
 ################################## RAD-seq
     #Load the RADseq SNPs
-        newRADlist <- read.csv("/Users/sebma/Desktop/SNP_SLH-main/SNP_SLH-main/methylation/vcftools_output_merged.tsv", sep="\t")
+        newRADlist <- read.csv("~/vcftools_output_merged.tsv", sep="\t")
         #Keep only NC_ and no mit
         newRADlist_NConlymit <- newRADlist %>% filter(grepl('NC_', NCBI)) #8480 SNPs
         newRADlist_NConly <- newRADlist_NConlymit %>% filter(!grepl('NC_000861.1', NCBI)) #8472 SNPs
@@ -232,10 +218,8 @@ library(ggplot2)
                   }
                   #Make end of peak:
                   ddRAD_SNPs$end <- ddRAD_SNPs$POS + 10000
-                  #write.csv(ddRAD_SNPs, "/Users/sebma/Desktop/GRanges_Objects/RAD_2sigmas_20kpeak_noNW_nomit.csv", row.names = FALSE)
-                  
                   RADSNPs_2sigma_20kpeak_GR <- makeGRfunction(ddRAD_SNPs)
-                  saveRDS(RADSNPs_2sigma_20kpeak_GR, "/Users/sebma/Desktop/GRanges_Objects/RAD_2sigmas_20kpeak_noNW_nomit_GR.rds")
+                  saveRDS(RADSNPs_2sigma_20kpeak_GR, "~/RAD_2sigmas_20kpeak_noNW_nomit_GR.rds")
         
                   
                   #Plot the distribution, just for info:
@@ -257,28 +241,14 @@ library(ggplot2)
                   
                   #Make GRange objects (no need to trim here)
                   ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR <- makeGRfunction(ddRAD_SNPs_LB)
-                  saveRDS(ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_LBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
+                  saveRDS(ddRAD_SNPs_LBonly_2sigmas_NConly_nomit_20k_GR, "~/ddRAD_SNPs_LBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
                   
                   ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR <- makeGRfunction(ddRAD_SNPs_SB)
-                  saveRDS(ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_SBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
+                  saveRDS(ddRAD_SNPs_SBonly_2sigmas_NConly_nomit_20k_GR, "~/ddRAD_SNPs_SBonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
                   
                   ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR <- makeGRfunction(ddRAD_SNPs_PL)
-                  saveRDS(ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR, "/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_PLonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
-                  
-                  #Then I also need to make the inverse datasets.. ATH I DO NOT NEED TO DO THIS
-                  # ddRAD_SNPs_PLSB <- ddRAD_SNPs %>% filter(!grepl('LB', HighMorph))
-                  # ddRAD_SNPs_PLLB <- ddRAD_SNPs %>% filter(!grepl('SB', HighMorph))
-                  # ddRAD_SNPs_SBLB <- ddRAD_SNPs %>% filter(!grepl('PL', HighMorph))
-                  # 
-                  # ddRAD_SNPs_PLSB_2sigmas_NConly_nomit_100k_GR <- makeGRfunction(ddRAD_SNPs_PLSB)
-                  # saveRDS(ddRAD_SNPs_PLSB_2sigmas_NConly_nomit_100k_GR, "/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_PLSB_2sigmas_NConly_nomit_100k_GR.rds")
-                  # 
-                  # ddRAD_SNPs_PLLB_2sigmas_NConly_nomit_100k_GR <- makeGRfunction(ddRAD_SNPs_PLLB)
-                  # saveRDS(ddRAD_SNPs_PLLB_2sigmas_NConly_nomit_100k_GR, "/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_PLLB_2sigmas_NConly_nomit_100k_GR.rds")
-                  # 
-                  # ddRAD_SNPs_SBLB_2sigmas_NConly_nomit_100k_GR <- makeGRfunction(ddRAD_SNPs_SBLB)
-                  # saveRDS(ddRAD_SNPs_SBLB_2sigmas_NConly_nomit_100k_GR, "/Users/sebma/Desktop/GRanges_Objects/ddRAD_SNPs_SBLB_2sigmas_NConly_nomit_100k_GR.rds")
-                  # 
+                  saveRDS(ddRAD_SNPs_PLonly_2sigmas_NConly_nomit_20k_GR, "~/ddRAD_SNPs_PLonly_NOBIAS_2sigmas_NConly_nomit_20k_GR.rds")
+
                  
 ######################## 
       #Keep only non-significant SNPs:  with Fst < 0.2 in all morphs. (6800 positions? That doesn't add up) 
@@ -297,11 +267,11 @@ library(ggplot2)
                   RADSNPs_nonsignif_outof2sigma_20kpeak_GR <- makeGRfunction(ddRAD_nonSNPs)
                   #Need to trim
                   RADSNPs_nonsignif_outof2sigma_20kpeak_GR_trim <- trim(RADSNPs_nonsignif_outof2sigma_20kpeak_GR, use.names=TRUE)
-                  saveRDS(RADSNPs_nonsignif_outof2sigma_20kpeak_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim.rds")
+                  saveRDS(RADSNPs_nonsignif_outof2sigma_20kpeak_GR_trim, "~/RADSNPs_nonsignif_outof2sigma_20kpeak_noNW_nomit_GR_trim.rds")
 
         
       #keep all "SNPs"
-        newRADlist <- read.csv("/Users/sebma/Desktop/SNP_SLH-main/SNP_SLH-main/methylation/vcftools_output_merged.tsv", sep="\t")
+        newRADlist <- read.csv("~/vcftools_output_merged.tsv", sep="\t")
         #Keep only NC_ and no mit
         newRADlist_NConlymit <- newRADlist %>% filter(grepl('NC_', NCBI))
         newRADlist_NConly <- newRADlist_NConlymit %>% filter(!grepl('NC_000861.1', NCBI))
@@ -319,20 +289,16 @@ library(ggplot2)
         newRADlist_NConly$end <- newRADlist_NConly$POS + 10000
         
         #ATH, this produces a couple of out of range SNPs because the end goes further than the end of the scaffold
+         #So we need to trim the data
         newRADlist_NConly_GR <- makeGRfunction(newRADlist_NConly)
         newRADlist_NConly_GR_trim <- trim(newRADlist_NConly_GR, use.names=TRUE)
-        saveRDS(newRADlist_NConly_GR_trim, "/Users/sebma/Desktop/GRanges_Objects/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
-        
-        # newRADlist100kb_NConly_GR <- makeGRfunction(newRADlist_NConly)
-        # newRADlist100kb_NConly_GR_trim <- trim(newRADlist100kb_NConly_GR, use.names=TRUE)
-        # saveRDS(newRADlist100kb_NConly_GR, "/Users/sebma/Desktop/GRanges_Objects/RADallpos_100kpeak_noNW_GR_trim.rds")
-
+        saveRDS(newRADlist_NConly_GR_trim, "~/RADallpos_20kpeak_noNW_nomit_GR_trim.rds")
         
                 
 ########################### WG-seq (there is no sequences on Mitochondria scaffold here so its the same)
     #Note, this is the WG data I am using, but I am still a little bit unsure as to where it came from
       #Load the data:
-        WGpeaks <- read.table("/Users/sebma/Desktop/RAD_WG_Meth/fst_window_WG.tsv", sep=",", header = TRUE)
+        WGpeaks <- read.table("~/fst_window_WG.tsv", sep=",", header = TRUE)
       #Only keep the data on NC_ and no mit
         WGpeaks_NConlymit <- WGpeaks %>% filter(grepl('NC_', CHROM)) #(151540 obs)
         WGpeaks_NConly <- WGpeaks_NConlymit %>% filter(!grepl('NC_000861.1', CHROM)) #(151540 obs)
@@ -611,3 +577,4 @@ library(ggplot2)
             nonDEgenes_NConly_uniq_20kbpeak_GR_trim <- trim(nonDEgenes_NConly_uniq_20kbpeak_GR, use.names=TRUE)
             saveRDS(nonDEgenes_NConly_uniq_20kbpeak_GR, "/Users/sebma/Desktop/GRanges_Objects/nonDEgenes_NConly_uniq_20kbpeak_GR_trim.rds")
             
+
