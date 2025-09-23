@@ -126,7 +126,7 @@ library(ggplot2)
         LGplot_RAD
 
     #Save as very long pdf that is easily readable.
-        pdf("~/Manhattan_RADseq_2sigmas_NOWEIRDSNPS_newpalette_180924.pdf", 20,10)
+        pdf("~/placeholdername.pdf", 20,10)
         LGplot_RAD
         dev.off()
 
@@ -228,7 +228,8 @@ library(ggplot2)
 
     #Save as very long pdf that is easily readable. 
     #Obviously, the WGseq Manhattan is very crowded because we have dots every 50kb on the whole genome.
-        pdf("~/Manhattan_WGseq_2sigmas_newpalette_180923.pdf", 20,10)
+        pdf("~/placeholdername.pdf", 20,10)
         LGplot_WG
         dev.off()
+
 
